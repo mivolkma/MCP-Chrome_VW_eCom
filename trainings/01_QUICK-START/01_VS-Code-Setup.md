@@ -65,7 +65,7 @@ Füge hinzu:
 ## 📚 Detaillierte Dokumentation
 
 Für ausführliche Step-by-Step-Anleitung mit Fehlerbehandlung:
-→ [00_Setup_MCP_Chrome_DevTools.md](00_Setup_MCP_Chrome_DevTools.md)
+→ [../00_Setup_MCP_Chrome_DevTools.md](../00_Setup_MCP_Chrome_DevTools.md)
 
 ---
 
@@ -332,16 +332,16 @@ npx -y @modelcontextprotocol/server-chrome-devtools --version
 
 ## 🔄 Nach erfolgreicher Installation
 
-1. ✅ Öffne [README.md](../README.md) für Projekt-Überblick
-2. ✅ Lese [agents.md](../agents.md) für Sicherheits-Regeln
-3. ✅ Starte mit [QUICK-REFERENCE.md](QUICK-REFERENCE.md)
-4. ✅ Nutze [COPILOT-CHAT-INIT.md](COPILOT-CHAT-INIT.md) für Chat-Initialisierung
+1. ✅ Öffne [README.md](../../README.md) für Projekt-Überblick
+2. ✅ Lese [../../agents.md](../../agents.md) für Sicherheits-Regeln
+3. ✅ Starte mit [04_Schnell-Referenz.md](04_Schnell-Referenz.md)
+4. ✅ Nutze [../03_TEMPLATES/Copilot-Chat-Init.md](../03_TEMPLATES/Copilot-Chat-Init.md) für Chat-Initialisierung
 
 ---
 
 ## 📚 Weitere Ressourcen
 
-- **Vollständige Setup-Anleitung:** [00_Setup_MCP_Chrome_DevTools.md](00_Setup_MCP_Chrome_DevTools.md)
+- **Vollständige Setup-Anleitung:** [../00_Setup_MCP_Chrome_DevTools.md](../00_Setup_MCP_Chrome_DevTools.md)
 - **MCP Protokoll Dokumentation:** https://modelcontextprotocol.io
 - **GitHub Copilot Docs:** https://docs.github.com/en/copilot
 - **Chrome DevTools Protocol:** https://chromedevtools.github.io/devtools-protocol/

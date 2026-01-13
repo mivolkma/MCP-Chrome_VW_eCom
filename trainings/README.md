@@ -52,11 +52,16 @@ Für Fragen, Fehlerbehebung und erweiterte Topics:
 - User-unabhängige Pfade
 - Troubleshooting
 
-### **[Chrome DevTools MCP - Tiefgang](02_DETAILLIERT/01_Erste_Schritte_Testszenarien.md)**
+### **[Chrome DevTools MCP - Tiefgang](01_Erste_Schritte_Testszenarien.md)**
 - Advanced MCP Server Konfiguration
 - Debugging Szenarien
 - Real-World Testfälle
 - Performance-Tipps
+
+### **[processOpportunities Payload-Vollständigkeit](02_DETAILLIERT/20_ProcessOpportunities_Payload_Completeness.md)**
+- Welche Journey-Daten im Submit stecken müssen
+- Sichere Erfassung (Redaction)
+- Lokales Validierungstool (PASS/FAIL)
 
 ---
 
@@ -101,7 +106,8 @@ Alte Dokumentationen, abgeschlossene Migrationen:
 | **Schnelle Antworten** | [01_QUICK-START/04_Schnell-Referenz.md](01_QUICK-START/04_Schnell-Referenz.md) | Referenz |
 | **Vollständige Struktur** | [02_DETAILLIERT/10_Vollständige-Struktur.md](02_DETAILLIERT/10_Vollständige-Struktur.md) | Referenz |
 | **Umgebungsvariablen** | [02_DETAILLIERT/11_Umgebungsvariablen.md](02_DETAILLIERT/11_Umgebungsvariablen.md) | Referenz |
-| **Chrome MCP Tiefgang** | [02_DETAILLIERT/01_Erste_Schritte_Testszenarien.md](02_DETAILLIERT/01_Erste_Schritte_Testszenarien.md) | Anleitung |
+| **Chrome MCP Tiefgang** | [01_Erste_Schritte_Testszenarien.md](01_Erste_Schritte_Testszenarien.md) | Anleitung |
+| **processOpportunities Payload** | [02_DETAILLIERT/20_ProcessOpportunities_Payload_Completeness.md](02_DETAILLIERT/20_ProcessOpportunities_Payload_Completeness.md) | Check/Referenz |
 | **Chat-Templates** | [03_TEMPLATES/Copilot-Chat-Init.md](03_TEMPLATES/Copilot-Chat-Init.md) | Template |
 | **Archiv** | [04_ARCHIVE/](04_ARCHIVE/) | Historisch |
 

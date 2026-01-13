@@ -35,7 +35,7 @@ AI_WorkDir/                          # Root
 ├── docs/                            # 📚 Dokumentation
 ├── trainings/                       # 🎓 Training
 ├── README.md                        # 📖 Hauptdokumentation
-└── STRUKTUR.md                      # 🗺️ Diese Struktur
+└── ../02_DETAILLIERT/10_Vollständige-Struktur.md                      # 🗺️ Diese Struktur
 ```
 
 ---
@@ -105,9 +105,9 @@ prompts/active/BTO_duc-vehicle_PROMPT.md
 ### 3. **Dokumentation aktualisieren**
 
 Neue Startpunkte:
-- Haupt-README: [README.md](README.md)
-- Struktur-Übersicht: [STRUKTUR.md](STRUKTUR.md)
-- Quick-Navigation: [Siehe STRUKTUR.md](STRUKTUR.md#-quick-navigation)
+- Haupt-README: [../../README.md](../../README.md)
+- Struktur-Übersicht: [../02_DETAILLIERT/10_Vollständige-Struktur.md](../02_DETAILLIERT/10_Vollständige-Struktur.md)
+- Quick-Navigation: [Siehe ../02_DETAILLIERT/10_Vollständige-Struktur.md#--quick-navigation](../02_DETAILLIERT/10_Vollständige-Struktur.md#-quick-navigation)
 
 ---
 
@@ -160,8 +160,8 @@ AI_WorkDir/
 
 ### 1. Kennenlernen der Struktur
 ```
-→ Lese: STRUKTUR.md
-→ Lese: README.md
+→ Lese: ../02_DETAILLIERT/10_Vollständige-Struktur.md
+→ Lese: ../../README.md
 ```
 
 ### 2. Neue Dateien verwenden
@@ -203,7 +203,7 @@ AI_WorkDir/
 - `credentials.example.json` kann sicher geteilt werden
 
 ### F: Wie starte ich ein neues Projekt?
-**A:** Siehe [STRUKTUR.md → Neues Projekt starten](STRUKTUR.md#-neuen-prompt-erstellen)
+**A:** Siehe [../02_DETAILLIERT/10_Vollständige-Struktur.md#--neuen-prompt-erstellen](../02_DETAILLIERT/10_Vollständige-Struktur.md#-neuen-prompt-erstellen)
 
 ---
 
@@ -224,11 +224,11 @@ AI_WorkDir/
 
 ## 📞 Benötigen Sie Hilfe?
 
-- **Struktur verstehen?** → [STRUKTUR.md](STRUKTUR.md)
-- **Schnelle Navigation?** → [STRUKTUR.md → Quick Navigation](STRUKTUR.md#-quick-navigation)
-- **Neuen Prompt?** → [prompts/README.md](prompts/README.md)
-- **Neue Analyse?** → [results/README.md](results/README.md)
-- **Setup Probleme?** → [trainings/00_Setup*.md](trainings/00_Setup_MCP_Chrome_DevTools.md)
+- **Struktur verstehen?** → [../02_DETAILLIERT/10_Vollständige-Struktur.md](../02_DETAILLIERT/10_Vollständige-Struktur.md)
+- **Schnelle Navigation?** → [../02_DETAILLIERT/10_Vollständige-Struktur.md#--quick-navigation](../02_DETAILLIERT/10_Vollständige-Struktur.md#-quick-navigation)
+- **Neuen Prompt?** → [../../prompts/README.md](../../prompts/README.md)
+- **Neue Analyse?** → [../../results/README.md](../../results/README.md)
+- **Setup Probleme?** → [../00_Setup_MCP_Chrome_DevTools.md](../00_Setup_MCP_Chrome_DevTools.md)
 
 ---
 

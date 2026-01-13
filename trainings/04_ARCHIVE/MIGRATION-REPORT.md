@@ -98,7 +98,7 @@ Neue Struktur:
 
 ---
 
-## 📝 Neue Datei: ENVIRONMENT-SETUP.md ✨
+## 📝 Neue Datei: ../02_DETAILLIERT/11_Umgebungsvariablen.md ✨
 
 Eine umfassende Dokumentation zu Umgebungsvariablen:
 
@@ -205,7 +205,7 @@ Alle Dokumente wurden aktualisiert:
 - ✅ `README.md` - Quick-Start mit Variablen
 - ✅ `MIGRATION.md` - Beispiele mit Variablen
 - ✅ `COPILOT-CHAT-INIT.md` - Workspace-Pfad variabel
-- ✅ `ENVIRONMENT-SETUP.md` - Neue umfassende Dokumentation
+- ✅ `../02_DETAILLIERT/11_Umgebungsvariablen.md` - Neue umfassende Dokumentation
 - ✅ `VERSIONS.md` - Aktualisiert mit ENVIRONMENT-SETUP.md
 
 ---
@@ -266,7 +266,7 @@ C:\Users\mivolkma\Documents\AI_WorkDir\scripts\my-script.ps1
 ## 📞 Support
 
 **Fragen zu Umgebungsvariablen?**
-→ Siehe [ENVIRONMENT-SETUP.md](ENVIRONMENT-SETUP.md)
+→ Siehe [../02_DETAILLIERT/11_Umgebungsvariablen.md](../02_DETAILLIERT/11_Umgebungsvariablen.md)
 
 **Fehler bei Pfaden?**
 → Überprüfe ob `$env:USERPROFILE` korrekt ausgegeben wird

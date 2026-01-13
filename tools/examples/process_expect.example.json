@@ -1,0 +1,12 @@
+{
+  "email": "test@test.de",
+  "finance": {
+    "duration": 36,
+    "mileage": 15000,
+    "downPayment": 0
+  },
+  "dealer": {
+    "postalCode": "10587",
+    "city": "Berlin"
+  }
+}

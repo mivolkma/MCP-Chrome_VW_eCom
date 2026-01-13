@@ -1,0 +1,2774 @@
+[
+    {
+        "testScenario": "eCom CTA_Configurator",
+        "description": "Verify that:\n- a CTA for starting the eCommerce journey is available in the summary page of the configurator feature app.\n- the eCom CTA is active and clickable.\n- clicking on the eCom CTA starts the ",
+        "acceptanceCriteria": [
+            "Verify that:\n- a CTA for starting the eCommerce journey is available in the summary page of the configurator feature app.\n- the eCom CTA is active and clickable.\n- clicking on the eCom CTA starts the corresponding eCommerce journey."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-01",
+                "description": "Verify that:\n- a CTA for starting the eCommerce journey is available in the summary page of the configurator feature app.\n- the eCom CTA is active and clickable.\n- clicking on the eCom CTA starts the corresponding eCommerce journey.",
+                "preconditions": "User is on eCom CTA_Configurator section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": "/konfigurator.html/__app1/id4-gtx-individualausstattung/"
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a CTA for starting the eCommerce journey is available in the summary page of the configurator feature app.\n- the eCom CTA is active and clickable.\n- clicking on the eCom CTA starts the corresponding eCommerce journey."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom page",
+        "description": "Verify that:\n- the eCom CTA opens a new page and starts with the personal data tab.\n- the eCom page displays a tab slider, highlighted personal data tab, a price box, the content of the current eCom j",
+        "acceptanceCriteria": [
+            "Verify that:\n- the eCom CTA opens a new page and starts with the personal data tab.\n- the eCom page displays a tab slider, highlighted personal data tab, a price box, the content of the current eCom journey step, the sticky bar and the Next Step CTA, and the price and leasing offer disclaimers at the bottom of it."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-02",
+                "description": "Verify that:\n- the eCom CTA opens a new page and starts with the personal data tab.\n- the eCom page displays a tab slider, highlighted personal data tab, a price box, the content of the current eCom journey step, the sticky bar and the Next Step CTA, and the price and leasing offer disclaimers at the bottom of it.",
+                "preconditions": "User is on eCom page section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the eCom CTA opens a new page and starts with the personal data tab.\n- the eCom page displays a tab slider, highlighted personal data tab, a price box, the content of the current eCom journey step, the sticky bar and the Next Step CTA, and the price and leasing offer disclaimers at the bottom of it."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom page\nThe tab slider",
+        "description": "Verify that:\n- the tab slider displays many tabs that cover all eCom journey steps.\n- the tabs that have not been accessed yet appear deactivated.\n- the slider has a right and left functioning sliding",
+        "acceptanceCriteria": [
+            "Verify that:\n- the tab slider displays many tabs that cover all eCom journey steps.\n- the tabs that have not been accessed yet appear deactivated.\n- the slider has a right and left functioning sliding arrows."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-03",
+                "description": "Verify that:\n- the tab slider displays many tabs that cover all eCom journey steps.\n- the tabs that have not been accessed yet appear deactivated.\n- the slider has a right and left functioning sliding arrows.",
+                "preconditions": "User is on eCom page\nThe tab slider section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the tab slider displays many tabs that cover all eCom journey steps.\n- the tabs that have not been accessed yet appear deactivated.\n- the slider has a right and left functioning sliding arrows."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom page\nThe price box",
+        "description": "Verify that:\n- the price box is displayed at the right side of the eCom page.\n- the correct information has been passed on to the eCommerce feature app and is displayed in the price box, for example t",
+        "acceptanceCriteria": [
+            "Verify that:\n- the price box is displayed at the right side of the eCom page.\n- the correct information has been passed on to the eCommerce feature app and is displayed in the price box, for example the car's name, the selected fincing parameters, and the total price."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-04",
+                "description": "Verify that:\n- the price box is displayed at the right side of the eCom page.\n- the correct information has been passed on to the eCommerce feature app and is displayed in the price box, for example the car's name, the selected fincing parameters, and the total price.",
+                "preconditions": "User is on eCom page\nThe price box section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the price box is displayed at the right side of the eCom page.\n- the correct information has been passed on to the eCommerce feature app and is displayed in the price box, for example the car's name, the selected fincing parameters, and the total price."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom page\nThe price box",
+        "description": "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possi",
+        "acceptanceCriteria": [
+            "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possible."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-05",
+                "description": "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possible.",
+                "preconditions": "User is on eCom page\nThe price box section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possible."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom page\nThe Sticky bar",
+        "description": "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on t",
+        "acceptanceCriteria": [
+            "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on the sticky bar.\n- clicking the Next Step CTA always leads to the next step when the current step is completed."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-06",
+                "description": "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on the sticky bar.\n- clicking the Next Step CTA always leads to the next step when the current step is completed.",
+                "preconditions": "User is on eCom page\nThe Sticky bar section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on the sticky bar.\n- clicking the Next Step CTA always leads to the next step when the current step is completed."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom Page\nThe Disclaimers",
+        "description": "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the sum",
+        "acceptanceCriteria": [
+            "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the summary step is accessed, the CO2 class disclaimer reference and text is also displayed."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-07",
+                "description": "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the summary step is accessed, the CO2 class disclaimer reference and text is also displayed.",
+                "preconditions": "User is on eCom Page\nThe Disclaimers section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the summary step is accessed, the CO2 class disclaimer reference and text is also displayed."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The personal data tab",
+        "description": "Verify that:\n- the personal data tab has a headline and a copy text requesting the user to enter the personal data.\n- specific dropdowns and input fields are displayed.\n- the user can use all the drop",
+        "acceptanceCriteria": [
+            "Verify that:\n- the personal data tab has a headline and a copy text requesting the user to enter the personal data.\n- specific dropdowns and input fields are displayed.\n- the user can use all the dropdowns and input field to enter the personal data.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-08",
+                "description": "Verify that:\n- the personal data tab has a headline and a copy text requesting the user to enter the personal data.\n- specific dropdowns and input fields are displayed.\n- the user can use all the dropdowns and input field to enter the personal data.\n",
+                "preconditions": "User is on eCom journey_The personal data tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the personal data tab has a headline and a copy text requesting the user to enter the personal data.\n- specific dropdowns and input fields are displayed.\n- the user can use all the dropdowns and input field to enter the personal data.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The personal data tab",
+        "description": "Verify that:\n- proceeding to the next eCom step is only possible when all mandatory information has been provided.\n- clicking on the Next Step CTA leads to the Volkswagen partner step.",
+        "acceptanceCriteria": [
+            "Verify that:\n- proceeding to the next eCom step is only possible when all mandatory information has been provided.\n- clicking on the Next Step CTA leads to the Volkswagen partner step."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-09",
+                "description": "Verify that:\n- proceeding to the next eCom step is only possible when all mandatory information has been provided.\n- clicking on the Next Step CTA leads to the Volkswagen partner step.",
+                "preconditions": "User is on eCom journey_The personal data tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- proceeding to the next eCom step is only possible when all mandatory information has been provided.\n- clicking on the Next Step CTA leads to the Volkswagen partner step."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Volkswagen partner tab",
+        "description": "Verify that:\n- the content of the Volkswagen partner tab can be accessed.\n- a headline and text are displayed.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the content of the Volkswagen partner tab can be accessed.\n- a headline and text are displayed.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-10",
+                "description": "Verify that:\n- the content of the Volkswagen partner tab can be accessed.\n- a headline and text are displayed.\n",
+                "preconditions": "User is on eCom journey_The Volkswagen partner tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the content of the Volkswagen partner tab can be accessed.\n- a headline and text are displayed.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Volkswagen partner\ntab-Input field",
+        "description": "Verify that:\n- a search input  field for searching dealers is displayed.\n- Locate Me functionality is visible\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- a search input  field for searching dealers is displayed.\n- Locate Me functionality is visible\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-11",
+                "description": "Verify that:\n- a search input  field for searching dealers is displayed.\n- Locate Me functionality is visible\n",
+                "preconditions": "User is on eCom journey_The Volkswagen partner\ntab-Input field section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a search input  field for searching dealers is displayed.\n- Locate Me functionality is visible\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Volkswagen partner\ntab-Dealer searching",
+        "description": "Verify that:\n- searching by cities or postal codes shows many corresponding results.\n- the location of the selected dealer is displayed on a map which can be activated in the first visit.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- searching by cities or postal codes shows many corresponding results.\n- the location of the selected dealer is displayed on a map which can be activated in the first visit.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-12",
+                "description": "Verify that:\n- searching by cities or postal codes shows many corresponding results.\n- the location of the selected dealer is displayed on a map which can be activated in the first visit.\n",
+                "preconditions": "User is on eCom journey_The Volkswagen partner\ntab-Dealer searching section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- searching by cities or postal codes shows many corresponding results.\n- the location of the selected dealer is displayed on a map which can be activated in the first visit.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Volkswagen partner\ntab-Dealer selection",
+        "description": "Verify that:\n- every shown result can be selected.\n- clicking on the Next Step CTA leads to the Pick up step.",
+        "acceptanceCriteria": [
+            "Verify that:\n- every shown result can be selected.\n- clicking on the Next Step CTA leads to the Pick up step."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-13",
+                "description": "Verify that:\n- every shown result can be selected.\n- clicking on the Next Step CTA leads to the Pick up step.",
+                "preconditions": "User is on eCom journey_The Volkswagen partner\ntab-Dealer selection section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- every shown result can be selected.\n- clicking on the Next Step CTA leads to the Pick up step."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Pick up tab",
+        "description": "Verify that:\n- the content of the Pick up tab can be accessed.\n- specific headline and copy text are displayed.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the content of the Pick up tab can be accessed.\n- specific headline and copy text are displayed.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-14",
+                "description": "Verify that:\n- the content of the Pick up tab can be accessed.\n- specific headline and copy text are displayed.\n",
+                "preconditions": "User is on eCom journey_The Pick up tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the content of the Pick up tab can be accessed.\n- specific headline and copy text are displayed.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Pick up tab\nPick up options",
+        "description": "Verify that:\n- The dealer selected in the previous step and further options for picking up the car will be displayed.\n- Clicking on the ‘More information’ link opens a corresponding information layer.",
+        "acceptanceCriteria": [
+            "Verify that:\n- The dealer selected in the previous step and further options for picking up the car will be displayed.\n- Clicking on the ‘More information’ link opens a corresponding information layer.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-15",
+                "description": "Verify that:\n- The dealer selected in the previous step and further options for picking up the car will be displayed.\n- Clicking on the ‘More information’ link opens a corresponding information layer.\n",
+                "preconditions": "User is on eCom journey_The Pick up tab\nPick up options section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- The dealer selected in the previous step and further options for picking up the car will be displayed.\n- Clicking on the ‘More information’ link opens a corresponding information layer.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Pick up tab\nTransfer costs",
+        "description": "Verify that:\n- every pick up option has specific transfer costs which effects the total leasing rate.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- every pick up option has specific transfer costs which effects the total leasing rate.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-16",
+                "description": "Verify that:\n- every pick up option has specific transfer costs which effects the total leasing rate.\n",
+                "preconditions": "User is on eCom journey_The Pick up tab\nTransfer costs section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- every pick up option has specific transfer costs which effects the total leasing rate.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Pick up tab\nPick up selection",
+        "description": "Verify that:\n- all the shown options are selectable.\n- By clicking on the CTA ‘Next Step’ you will be taken to the step ‘Summary’ only if a pick-up option has been selected.",
+        "acceptanceCriteria": [
+            "Verify that:\n- all the shown options are selectable.\n- By clicking on the CTA ‘Next Step’ you will be taken to the step ‘Summary’ only if a pick-up option has been selected."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-17",
+                "description": "Verify that:\n- all the shown options are selectable.\n- By clicking on the CTA ‘Next Step’ you will be taken to the step ‘Summary’ only if a pick-up option has been selected.",
+                "preconditions": "User is on eCom journey_The Pick up tab\nPick up selection section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- all the shown options are selectable.\n- By clicking on the CTA ‘Next Step’ you will be taken to the step ‘Summary’ only if a pick-up option has been selected."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab",
+        "description": "Verify that:\n- the content of the Summary tab can be accessed.\n- a specific headline is displayed.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the content of the Summary tab can be accessed.\n- a specific headline is displayed.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-18",
+                "description": "Verify that:\n- the content of the Summary tab can be accessed.\n- a specific headline is displayed.\n",
+                "preconditions": "User is on eCom journey_The Summary tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the content of the Summary tab can be accessed.\n- a specific headline is displayed.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nPersonal information",
+        "description": "Verify that:\n- some provided personal data is shown.\n- the wished contract is shown under the corresponding section.",
+        "acceptanceCriteria": [
+            "Verify that:\n- some provided personal data is shown.\n- the wished contract is shown under the corresponding section."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-19",
+                "description": "Verify that:\n- some provided personal data is shown.\n- the wished contract is shown under the corresponding section.",
+                "preconditions": "User is on eCom journey_The Summary tab\nPersonal information section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- some provided personal data is shown.\n- the wished contract is shown under the corresponding section."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe offerer",
+        "description": "Verify that:\n- the offerer is shown under the corresponding section.\n- a clickable info icon is displayed next to the offere which opens a corresponding info layer if clicked on.\n- the info layer can ",
+        "acceptanceCriteria": [
+            "Verify that:\n- the offerer is shown under the corresponding section.\n- a clickable info icon is displayed next to the offere which opens a corresponding info layer if clicked on.\n- the info layer can be closed by clicking on the close button."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-20",
+                "description": "Verify that:\n- the offerer is shown under the corresponding section.\n- a clickable info icon is displayed next to the offere which opens a corresponding info layer if clicked on.\n- the info layer can be closed by clicking on the close button.",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe offerer section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the offerer is shown under the corresponding section.\n- a clickable info icon is displayed next to the offere which opens a corresponding info layer if clicked on.\n- the info layer can be closed by clicking on the close button."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe dealer",
+        "description": "Verify that:\n- the selected dealer is shown under the corresponding section.\n- the dealer address, telephone number, website, and email address are shown.\n- the following text message is also shown un",
+        "acceptanceCriteria": [
+            "Verify that:\n- the selected dealer is shown under the corresponding section.\n- the dealer address, telephone number, website, and email address are shown.\n- the following text message is also shown under the dealer section. \"The Volkswagen partner you select will receive access to your order information as part of managing your order process.\""
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-21",
+                "description": "Verify that:\n- the selected dealer is shown under the corresponding section.\n- the dealer address, telephone number, website, and email address are shown.\n- the following text message is also shown under the dealer section. \"The Volkswagen partner you select will receive access to your order information as part of managing your order process.\"",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe dealer section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the selected dealer is shown under the corresponding section.\n- the dealer address, telephone number, website, and email address are shown.\n- the following text message is also shown under the dealer section. \"The Volkswagen partner you select will receive access to your order information as part of managing your order process.\""
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe pick up location",
+        "description": "Verify that:\n- the selected pick up location is shown under the corresponding section.\n- a non-binding delivery date is shown.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the selected pick up location is shown under the corresponding section.\n- a non-binding delivery date is shown.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-22",
+                "description": "Verify that:\n- the selected pick up location is shown under the corresponding section.\n- a non-binding delivery date is shown.\n",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe pick up location section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the selected pick up location is shown under the corresponding section.\n- a non-binding delivery date is shown.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe selected vehicle",
+        "description": "Verify that:\n- the selected vehicle information is shown under the corresponding section.\n- the full name of the selected vehicle is shown.",
+        "acceptanceCriteria": [
+            "Verify that:\n- the selected vehicle information is shown under the corresponding section.\n- the full name of the selected vehicle is shown."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-23",
+                "description": "Verify that:\n- the selected vehicle information is shown under the corresponding section.\n- the full name of the selected vehicle is shown.",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe selected vehicle section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the selected vehicle information is shown under the corresponding section.\n- the full name of the selected vehicle is shown."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nEnergy and Emissions Specifications",
+        "description": "Verify that:\n- the consumption, emission, and the co2 efficiency information is displayed.\n- a disclaimer reference is displayed next to the co2 class which refer to a corresponding disclaimer text at",
+        "acceptanceCriteria": [
+            "Verify that:\n- the consumption, emission, and the co2 efficiency information is displayed.\n- a disclaimer reference is displayed next to the co2 class which refer to a corresponding disclaimer text at the bottom of the eCom page."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-24",
+                "description": "Verify that:\n- the consumption, emission, and the co2 efficiency information is displayed.\n- a disclaimer reference is displayed next to the co2 class which refer to a corresponding disclaimer text at the bottom of the eCom page.",
+                "preconditions": "User is on eCom journey_The Summary tab\nEnergy and Emissions Specifications section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the consumption, emission, and the co2 efficiency information is displayed.\n- a disclaimer reference is displayed next to the co2 class which refer to a corresponding disclaimer text at the bottom of the eCom page."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nENVKV label",
+        "description": "Verify that:\n- a clickable link is show.\n- clicking on the link opens a layer showing the ENVKV label.\n- the ENVKV layer can be closed by clicking on the close button or the shim.",
+        "acceptanceCriteria": [
+            "Verify that:\n- a clickable link is show.\n- clicking on the link opens a layer showing the ENVKV label.\n- the ENVKV layer can be closed by clicking on the close button or the shim."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-25",
+                "description": "Verify that:\n- a clickable link is show.\n- clicking on the link opens a layer showing the ENVKV label.\n- the ENVKV layer can be closed by clicking on the close button or the shim.",
+                "preconditions": "User is on eCom journey_The Summary tab\nENVKV label section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a clickable link is show.\n- clicking on the link opens a layer showing the ENVKV label.\n- the ENVKV layer can be closed by clicking on the close button or the shim."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nExpanding and collapsing the section",
+        "description": "Verify that:\n- a dropdown button is shown.\n- clicking on the dropdown button expands the selected vehicle section and clicking on it again collapses it.\n- the expantion shows more vehicle information,",
+        "acceptanceCriteria": [
+            "Verify that:\n- a dropdown button is shown.\n- clicking on the dropdown button expands the selected vehicle section and clicking on it again collapses it.\n- the expantion shows more vehicle information, tire label link, product safty information link and the special equipment if selected."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-26",
+                "description": "Verify that:\n- a dropdown button is shown.\n- clicking on the dropdown button expands the selected vehicle section and clicking on it again collapses it.\n- the expantion shows more vehicle information, tire label link, product safty information link and the special equipment if selected.",
+                "preconditions": "User is on eCom journey_The Summary tab\nExpanding and collapsing the section section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a dropdown button is shown.\n- clicking on the dropdown button expands the selected vehicle section and clicking on it again collapses it.\n- the expantion shows more vehicle information, tire label link, product safty information link and the special equipment if selected."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe tire labels",
+        "description": "Verify that:\n- clicking on the tire label link opens the corresponding tire label layer.\n- related vehicle tire labels are displayed in the layer (svg graphics).\n- the layer can be closed by clicking ",
+        "acceptanceCriteria": [
+            "Verify that:\n- clicking on the tire label link opens the corresponding tire label layer.\n- related vehicle tire labels are displayed in the layer (svg graphics).\n- the layer can be closed by clicking on the close button or the shim."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-27",
+                "description": "Verify that:\n- clicking on the tire label link opens the corresponding tire label layer.\n- related vehicle tire labels are displayed in the layer (svg graphics).\n- the layer can be closed by clicking on the close button or the shim.",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe tire labels section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- clicking on the tire label link opens the corresponding tire label layer.\n- related vehicle tire labels are displayed in the layer (svg graphics).\n- the layer can be closed by clicking on the close button or the shim."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe product safty information",
+        "description": "Verify that:\n- clicking on the product safty information link leads to a separate page.",
+        "acceptanceCriteria": [
+            "Verify that:\n- clicking on the product safty information link leads to a separate page."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-28",
+                "description": "Verify that:\n- clicking on the product safty information link leads to a separate page.",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe product safty information section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- clicking on the product safty information link leads to a separate page."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nThe manufacturer",
+        "description": "Verify that:\n- the manufacturer is shown under the corresponding section.\n- the address and the email address of the manufacturer are shown under this section.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the manufacturer is shown under the corresponding section.\n- the address and the email address of the manufacturer are shown under this section.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-29",
+                "description": "Verify that:\n- the manufacturer is shown under the corresponding section.\n- the address and the email address of the manufacturer are shown under this section.\n",
+                "preconditions": "User is on eCom journey_The Summary tab\nThe manufacturer section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the manufacturer is shown under the corresponding section.\n- the address and the email address of the manufacturer are shown under this section.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_The Summary tab\nProceeding the journey",
+        "description": "Verify that:\n- contract documents are shown in some cases(needs to be investigated more).\n- selectable additional services are shown.\n- clicking on the Next Step CTA leads to the Thank you step.",
+        "acceptanceCriteria": [
+            "Verify that:\n- contract documents are shown in some cases(needs to be investigated more).\n- selectable additional services are shown.\n- clicking on the Next Step CTA leads to the Thank you step."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-30",
+                "description": "Verify that:\n- contract documents are shown in some cases(needs to be investigated more).\n- selectable additional services are shown.\n- clicking on the Next Step CTA leads to the Thank you step.",
+                "preconditions": "User is on eCom journey_The Summary tab\nProceeding the journey section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- contract documents are shown in some cases(needs to be investigated more).\n- selectable additional services are shown.\n- clicking on the Next Step CTA leads to the Thank you step."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_Thank You tab",
+        "description": "Verify that:\n- the content of the \"Thank You\" tab can be accessed.\n- a \"Thank You\" text message is displayed for the user for being interrested.",
+        "acceptanceCriteria": [
+            "Verify that:\n- the content of the \"Thank You\" tab can be accessed.\n- a \"Thank You\" text message is displayed for the user for being interrested."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-31",
+                "description": "Verify that:\n- the content of the \"Thank You\" tab can be accessed.\n- a \"Thank You\" text message is displayed for the user for being interrested.",
+                "preconditions": "User is on eCom journey_Thank You tab section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the content of the \"Thank You\" tab can be accessed.\n- a \"Thank You\" text message is displayed for the user for being interrested."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_Thank You tab\nConfirmation email",
+        "description": "Verify that:\n- the user is informed about a confirmation email that has been sent.\n",
+        "acceptanceCriteria": [
+            "Verify that:\n- the user is informed about a confirmation email that has been sent.\n"
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-32",
+                "description": "Verify that:\n- the user is informed about a confirmation email that has been sent.\n",
+                "preconditions": "User is on eCom journey_Thank You tab\nConfirmation email section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- the user is informed about a confirmation email that has been sent.\n"
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "eCom journey_Thank You tab\nSelection overivew",
+        "description": "Verify that:\n- an overview of selected options is shown.",
+        "acceptanceCriteria": [
+            "Verify that:\n- an overview of selected options is shown."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-33",
+                "description": "Verify that:\n- an overview of selected options is shown.",
+                "preconditions": "User is on eCom journey_Thank You tab\nSelection overivew section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- an overview of selected options is shown."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "Proceeding the journey to the FSAG",
+        "description": "Verify that:\n- a Next Step CTA is displayed.",
+        "acceptanceCriteria": [
+            "Verify that:\n- a Next Step CTA is displayed."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTO-34",
+                "description": "Verify that:\n- a Next Step CTA is displayed.",
+                "preconditions": "User is on Proceeding the journey to the FSAG section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n- a Next Step CTA is displayed."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+    {
+        "testScenario": "Proceeding the journey to the FSAG",
+        "description": "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page.",
+        "acceptanceCriteria": [
+            "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page."
+        ],
+        "testCases": [
+            {
+                "id": "OH-eCom-BTS-35",
+                "description": "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page.",
+                "preconditions": "User is on Proceeding the journey to the FSAG section",
+                "steps": [
+                    {
+                        "action": "Open URL",
+                        "value": null
+                    },
+                    {
+                        "action": "Verify UI elements",
+                        "data-testid": "placeholder-testid"
+                    }
+                ],
+                "expectedResult": "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page."
+            }
+        ],
+        "testDataSchema": {
+            "firstName": {
+                "type": "string",
+                "required": true,
+                "example": "John"
+            },
+            "lastName": {
+                "type": "string",
+                "required": true,
+                "example": "Doe"
+            },
+            "email": {
+                "type": "string",
+                "required": true,
+                "pattern": ".+@.+\\..+",
+                "example": "test@test.de"
+            }
+        },
+        "negativeTests": [
+            {
+                "description": "Verify error when mandatory fields are empty",
+                "steps": [
+                    {
+                        "action": "Leave all fields empty"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Error message displayed, cannot proceed"
+            },
+            {
+                "description": "Verify error for invalid email format",
+                "steps": [
+                    {
+                        "action": "Fill input",
+                        "field": "Email",
+                        "value": "invalid-email",
+                        "data-testid": "input-email"
+                    },
+                    {
+                        "action": "Click CTA",
+                        "data-testid": "cta-next-step"
+                    }
+                ],
+                "expectedResult": "Validation error displayed for email"
+            }
+        ],
+        "deviceMatrix": [
+            "Desktop-Chrome",
+            "Mobile-iOS-Safari",
+            "Tablet-Android-Chrome"
+        ]
+    },
+{
+  "metadata": {
+    "generated_on": "2024-06-12T10:00:00Z",
+    "version": "1.0.0",
+    "author": "M.Volkmar"
+  }
+}
+]

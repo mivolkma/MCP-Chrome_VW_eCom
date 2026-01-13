@@ -6,7 +6,7 @@
 
 *Für schnelle Nachschlag während der Arbeit*
 
-📌 **Für Sicherheits-Anweisungen IMMER [agents.md](agents.md) konsultieren!**
+- **Sicherheits-Regeln:** `../../agents.md`
 
 ---
 
@@ -80,8 +80,8 @@ Editiere: results/bto-duc-vehicle/summary.md
 | Ergebnisse | `results/bto-duc-vehicle/latest.md` |
 | Alte Daten | `results/bto-duc-vehicle/archive/` |
 | Chrome-Starter | `chrome-mcp-start.bat` oder `.ps1` |
-| Projekt-Info | `README.md` → `STRUKTUR.md` |
-| Training | `trainings/README.md` |
+| Projekt-Info | `../../README.md` → `../02_DETAILLIERT/10_Vollständige-Struktur.md` |
+| Training | `../README.md` |
 
 ---
 
@@ -229,10 +229,10 @@ ls results/bto-duc-vehicle/archive/
 
 ## 📚 **Weitere Info**
 
-- **Projekt-Überblick:** `AGENT-ONBOARDING.md`
-- **Komplette Struktur:** `STRUKTUR.md`
-- **Was hat sich geändert:** `MIGRATION.md`
-- **Chrome Setup:** `CHROME-MCP-SETUP.md`
+- **Projekt-Überblick:** `../00_EINSTIEG/00_Projektüberblick.md`
+- **Komplette Struktur:** `../02_DETAILLIERT/10_Vollständige-Struktur.md`
+- **Was hat sich geändert:** `../04_ARCHIVE/MIGRATION.md`
+- **Chrome Setup:** `02_Chrome-DevTools-Setup.md`
 
 ---
 

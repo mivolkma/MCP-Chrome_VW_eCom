@@ -14,6 +14,8 @@ prompts/
 │   └── data-extraction.md
 └── active/               # 🎯 Aktive Projekt-Prompts
     ├── BTO_duc-vehicle_PROMPT.md      # Build-to-Order Analyse
+    ├── BTO-Test-full.md               # Test Execution Guide (Journey)
+    ├── BTO-SmokeTest.md               # SmokeTest (Trockenlauf → nächste Version)
     ├── [weitere-projekte].md
     └── [weitere-projekte].md
 ```
@@ -57,6 +59,17 @@ Verwende BTO_duc-vehicle_PROMPT.md für:
 - VW Konfigurator-Tests
 - duc-vehicle API-Analysen
 - BTO-Workflow Automatisierung
+
+### BTO-Test-full.md
+**Status:** ✅ Aktiv
+**Zweck:** Voller Journey-Run inkl. negative Tests, Evidence und UI↔API Checks.
+
+### BTO-SmokeTest.md
+**Status:** ✅ Aktiv
+**Zweck:** Schneller Smoke über Tabs 1–4 + Preisbox/Edit + Submit Triggering.
+**Enthält:**
+- processOpportunities Vollständigkeits-Check (Tool: `tools/validate_process_opportunities_payload.py`)
+- DUC/FSAG Entry-URL Live-Capture (Snippet: `tools/snippets/trace_duc_entrypoint.js`)
 ```
 
 ## 📝 Neuen Prompt erstellen

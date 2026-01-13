@@ -6,7 +6,7 @@
 **Zeit:** ~10-15 Minuten zum Durchlesen  
 **Status:** ✅ Production-Ready
 
-⚠️ **NACH DIESEM DOKUMENT:** Lies [agents.md](agents.md) für tägliche Sicherheits-Anweisungen und Arbeitsablauf!
+⚠️ **NACH DIESEM DOKUMENT:** Lies [../../agents.md](../../agents.md) für tägliche Sicherheits-Anweisungen und Arbeitsablauf!
 
 ---
 

@@ -204,9 +204,8 @@ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 
 ## 📚 Weiterführende Links
 
-- [agents.md](agents.md) - Sicherheits-Anweisungen
-- [VERSIONS.md](VERSIONS.md) - Versionierungsschema
-- [README.md](README.md) - Projekt-Überblick
+- [../../agents.md](../../agents.md) - Sicherheits-Anweisungen
+- [../../README.md](../../README.md) - Projekt-Überblick
 
 ---
 

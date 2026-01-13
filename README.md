@@ -265,10 +265,10 @@ git status
 | Dokument | Für wen? | Wann lesen? |
 |----------|---------|-----------|
 | **[agents.md](agents.md)** | 🤖 Alle Agents | **VOR JEDEM START** - Sicherheits-Gedächtnis |
-| **[AGENT-ONBOARDING.md](trainings/AGENT-ONBOARDING.md)** | 👤 Neue Agenten | Erste Woche - Projekt-Überblick |
-| **[QUICK-REFERENCE.md](trainings/QUICK-REFERENCE.md)** | ⚡ Während Arbeit | Tägliche Nachschlag |
-| **[COPILOT-CHAT-INIT.md](trainings/COPILOT-CHAT-INIT.md)** | 💬 Chat-Sessions | Neuen Chat starten |
-| **[CHROME-MCP-SETUP.md](docs/CHROME-MCP-SETUP.md)** | 🌐 Browser-Automation | Chrome-Probleme |
+| **[Projektüberblick](trainings/00_EINSTIEG/00_Projektüberblick.md)** | 👤 Neue Agenten | Erste Woche - Projekt-Überblick |
+| **[Schnell-Referenz](trainings/01_QUICK-START/04_Schnell-Referenz.md)** | ⚡ Während Arbeit | Tägliche Nachschlag |
+| **[Copilot Chat-Init](trainings/03_TEMPLATES/Copilot-Chat-Init.md)** | 💬 Chat-Sessions | Neuen Chat starten |
+| **[Chrome DevTools Setup](trainings/01_QUICK-START/02_Chrome-DevTools-Setup.md)** | 🌐 Browser-Automation | Chrome-Probleme |
 
 ---
 
