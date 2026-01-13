@@ -1,0 +1,60 @@
+# GitHub Personal Access Token - TEMPLATE
+
+## 📝 Wie verwenden:
+
+1. Erstelle einen neuen Token auf GitHub:
+   ```
+   GitHub → Settings → Developer settings → Personal access tokens (classic)
+   → Generate new token (classic)
+   ```
+
+2. Required Scopes:
+   - ✅ `repo` (Full control of private repositories)
+   - ✅ `read:org` (Read org and team membership)
+   - ✅ `workflow` (Update GitHub Actions and reusable workflows)
+
+3. Kopiere den Token (wird nur 1x angezeigt!)
+
+4. Speichere ihn in einer neuen Datei `github_token` (ohne `.example`):
+   ```powershell
+   $token = "github_pat_xxxxxxxxxxxxx..."
+   $token | Out-File "github_token" -Encoding UTF8 -NoNewline
+   ```
+
+5. Oder einfach die Inhalte dieser Datei ersetzen und speichern als `github_token`
+
+## ⚠️ SICHERHEIT:
+
+- 🔒 `github_token` wird von `.gitignore` ignoriert
+- ❌ NIEMALS in Git committen!
+- ❌ NIEMALS in Chat posten!
+- ✅ LOKAL speichern nur
+- ✅ Regelmäßig regenerieren (z.B. monatlich)
+
+## 🔄 Token-Rotation:
+
+```powershell
+# Alt: Auf GitHub löschen
+# Settings → Developer settings → Personal access tokens (classic) → Delete
+
+# Neu: Generieren
+# GitHub → Settings → Create new token (classic)
+
+# Datei aktualisieren:
+# Inhalt von github_token ersetzen mit neuem Token
+```
+
+## 🔐 Token-Sicherheit Check:
+
+```powershell
+# Nie in Dateien kommt:
+grep -r "github_pat_" .  # SOLLTE NICHTS finden!
+
+# Nur in .secrets/github_token (ignoriert):
+ls .secrets/github_token  # OK - wird ignoriert
+```
+
+---
+
+**DEIN TOKEN HIER EINFÜGEN (ersetze alles nach dieser Zeile):**
+github_pat_YOUR_TOKEN_HERE
