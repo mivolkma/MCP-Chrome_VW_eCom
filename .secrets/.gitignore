@@ -1,0 +1,4 @@
+# Credentials ignorieren (lokale Sicherheit)
+credentials.json
+credentials.*.json
+!credentials.example.json

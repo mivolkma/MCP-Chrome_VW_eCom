@@ -1,0 +1,156 @@
+# 🔐 Git Ignore - Sicherheit & Datenschutz
+
+# ============================================================================
+# CREDENTIALS & GEHEIME INFORMATIONEN
+# ============================================================================
+
+# Credentials und API Keys
+credentials.json
+credentials.local.json
+.env
+.env.local
+.env.*.local
+secrets.json
+
+# ============================================================================
+# BROWSER CACHE & PROFILE
+# ============================================================================
+
+# Chrome DevTools MCP Cache
+.cache/
+.cache/**/*
+**/.cache
+**/.cache/**/*
+
+# Browser Profile
+chrome-profile/
+chrome-profile/**/*
+**/.chrome-profile
+**/.chrome-profile/**/*
+
+# ============================================================================
+# NODE MODULES & DEPENDENCIES
+# ============================================================================
+
+node_modules/
+node_modules/**/*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================================================
+# IDE & EDITOR
+# ============================================================================
+
+# VS Code
+.vscode/settings.local.json
+.vscode/**/*.local
+.vs/
+*.swp
+*.swo
+*~
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ============================================================================
+# OS-SPEZIFISCHE DATEIEN
+# ============================================================================
+
+# Windows
+Thumbs.db
+.DS_Store
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+.Trash-*
+
+# ============================================================================
+# LOGS & TEMPORÄRE DATEIEN
+# ============================================================================
+
+*.log
+*.logs
+*.tmp
+*.temp
+*.bak
+.tmp/
+
+# ============================================================================
+# PERSÖNLICHE DATEN
+# ============================================================================
+
+# Screenshots & Bilder (können persönliche Daten enthalten)
+screenshots/
+*.screenshot.png
+test-output/
+test-results/
+
+# Browserverlauf & Cookies
+cookies.json
+history.json
+session*.json
+
+# ============================================================================
+# BUILD & DIST VERZEICHNISSE
+# ============================================================================
+
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# ============================================================================
+# ANALYSEERGEBNISSE & DATEN - NIEMALS IN GIT!
+# ============================================================================
+# ⚠️ KRITISCH: Alle results/ Dateien sind LOKAL und werden IGNORIERT
+# Nur Prompts/Templates werden geteilt, NIEMALS Ergebnisse/API-Responses
+
+results/
+results/**/*
+!results/README.md
+!results/**/README.md
+
+# ============================================================================
+# ERLAUBTE DATEIEN (!)
+# ============================================================================
+# Diese Dateien sind SICHER zu teilen:
+
+!.gitignore
+!README.md
+
+# Dokumentation & Guides (SAFE)
+!docs/
+!docs/**/*
+!trainings/
+!trainings/**/*
+
+# Prompts & Workflows (SAFE - nur Vorlagen)
+!prompts/
+!prompts/**/*
+!prompts/README.md
+!prompts/templates/**/*
+!prompts/active/**/*
+
+# Secrets (nur Templates & Docs)
+!.secrets/README.md
+!.secrets/.gitignore
+!.secrets/credentials.example.json
+
+# Konfiguration
+!package.json
+!.editorconfig
