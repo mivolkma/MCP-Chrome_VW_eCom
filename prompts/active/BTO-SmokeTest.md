@@ -13,20 +13,21 @@ Rahmenbedingungen:
 - E-Mail immer: `test@test.de`
 - Bekannter Chrome-Dialog: `.eu` → Credentials; `.io` → schließen.
 
-Testcharta (git-verfügbar):
-- `prompts/testdata/BTO-testcharta.json`
-- Kompakt: `prompts/testdata/BTO-testcharta_compact.md`
+Testcharta (git-verfügbar, v1.0):
+- Vollständig: [prompts/testdata/bto/v1.0/charter_full.md](prompts/testdata/bto/v1.0/charter_full.md)
+- Kompakt: [prompts/testdata/bto/v1.0/charter_compact.md](prompts/testdata/bto/v1.0/charter_compact.md)
+- JSON: [prompts/testdata/bto/v1.0/charter.json](prompts/testdata/bto/v1.0/charter.json)
 
 ## Scope (PASS/FAIL Kriterien)
 
-### 1) Einstieg & Tab-Slider (OH-eCom-BTO-02/03)
+### 1) Einstieg & Tab-Slider ([OH-eCom-BTO-02](prompts/testdata/bto/v1.0/charter_full.md#L15) / [OH-eCom-BTO-03](prompts/testdata/bto/v1.0/charter_full.md#L20))
 - Checkout öffnet, Tabs sichtbar, Tab 5 bleibt ggf. disabled (akzeptiert, solange CTA-Calls laufen).
 
 ### 2) Preisbox Baseline (OH-eCom-BTO-04)
 - Preisbox sichtbar, Basiswerte plausibel.
 - WebCalc Call `api.cons.webcalc.vwfs.io/webcalc-frontend-service` liefert 200.
 
-### 3) Angebot bearbeiten (OH-eCom-BTO-05)
+### 3) Angebot bearbeiten ([OH-eCom-BTO-05](prompts/testdata/bto/v1.0/charter_full.md#L36))
 - „Angebot bearbeiten“ öffnet Financing Layer.
 - Änderung z.B. 10.000 → 15.000 km ist möglich.
 - Summary zeigt die neuen Werte.
