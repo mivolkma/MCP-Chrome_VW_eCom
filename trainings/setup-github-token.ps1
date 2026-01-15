@@ -124,7 +124,23 @@ if (Get-Command git-credential-manager-core -ErrorAction SilentlyContinue) {
     Write-Host "✅ Credentials gespeichert (Remote bleibt ohne Token)" -ForegroundColor Green
 } else {
     Write-Host "⚠️  git-credential-manager-core nicht gefunden." -ForegroundColor Yellow
-    Write-Host "   Empfehlung: Git for Windows inkl. Credential Manager installieren oder beim ersten 'git push' den Token einmalig eingeben." -ForegroundColor Gray
+    Write-Host "   Nutze Fallback via 'git credential approve' (schreibt in den konfigurierten credential.helper, z.B. wincred)." -ForegroundColor Gray
+
+    $payload = @(
+        "protocol=https",
+        "host=github.com",
+        "username=$user",
+        "password=$token",
+        ""
+    ) -join "`n"
+
+    $payload | git credential approve | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✅ Credentials gespeichert (Fallback)" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  Fallback konnte Credentials nicht speichern." -ForegroundColor Yellow
+        Write-Host "   Du kannst beim nächsten 'git push' den Token interaktiv eingeben oder den credential.helper prüfen." -ForegroundColor Gray
+    }
 }
 
 # 5. Status
