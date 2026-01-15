@@ -1,5 +1,9 @@
 # Setup-Anleitung: MCP Chrome DevTools Server für VW BTO-Analyse
 
+**Version:** 1.1  
+**Status:** ✅ Production-Ready  
+**Zuletzt aktualisiert:** 15. Januar 2026
+
 Diese Anleitung zeigt, wie Sie den Chrome DevTools MCP Server in VS Code einrichten, um automatisierte Browser-Tests und API-Analysen durchzuführen.
 
 ---
@@ -337,6 +341,6 @@ Nach erfolgreicher Installation:
 
 ---
 
-**Version:** 1.0  
-**Datum:** 13. Januar 2026  
+**Version:** 1.1  
+**Zuletzt aktualisiert:** 15. Januar 2026  
 **Erstellt für:** VW BTO duc-vehicle API Analyse

@@ -1,8 +1,8 @@
 # 🔧 Umgebungsvariablen & Benutzer-Konfiguration
 
-**Version:** 1.0  
+**Version:** 1.2  
 **Status:** ✅ Production-Ready  
-**Datum:** 13. Januar 2026
+**Zuletzt aktualisiert:** 15. Januar 2026
 
 ---
 
@@ -136,6 +136,10 @@ Wenn Variablen nicht möglich sind:
 - Oder: "Ihr Workspace-Verzeichnis"
 - Oder: "[WORKSPACE]/results/" (mit erklärung was [WORKSPACE] ist)
 ```
+
+### ✅ **DO - Versionierung pflegen:**
+- Header-Angaben aktualisieren (z.B. `Version`, `Datum`/`Zuletzt aktualisiert`).
+- Wenn die Datei einen Versionsverlauf hat: Eintrag ergänzen (Was wurde geändert, wann?).
 
 ---
 

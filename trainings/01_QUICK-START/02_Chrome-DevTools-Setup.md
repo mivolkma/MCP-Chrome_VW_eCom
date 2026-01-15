@@ -1,8 +1,8 @@
 # Chrome MCP Remote Debugging - Problemlösung & Konfiguration
 
-**Version:** 1.0  
-**Datum:** 13. Januar 2026  
-**Status:** ✅ Production-Ready
+**Version:** 1.1  
+**Status:** ✅ Production-Ready  
+**Zuletzt aktualisiert:** 15. Januar 2026
 
 ---
 
@@ -169,6 +169,6 @@ http://localhost:9333
 
 ---
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** ✅ Getestet  
-**Erstellt:** 13. Januar 2026
+**Zuletzt aktualisiert:** 15. Januar 2026

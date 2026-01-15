@@ -1,8 +1,8 @@
 # 🔌 VS Code Setup für MCP Chrome DevTools
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** ✅ Production-Ready  
-**Datum:** 13. Januar 2026
+**Zuletzt aktualisiert:** 15. Januar 2026
 
 ---
 
@@ -386,4 +386,7 @@ npx -y @modelcontextprotocol/server-chrome-devtools --version
 
 **Status:** Vollständig dokumentiert und getestet ✅
 
-*Zuletzt aktualisiert: 13. Januar 2026*
+---
+
+**Version:** 1.1  
+**Zuletzt aktualisiert:** 15. Januar 2026

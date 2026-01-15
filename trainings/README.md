@@ -1,8 +1,8 @@
 # 🎓 Training & Dokumentation - Zentrale Navigation
 
-**Version:** 2.0  
+**Version:** 2.2  
 **Status:** 🧪 Proof of Work (PoW)  
-**Zuletzt aktualisiert:** 13. Januar 2026
+**Zuletzt aktualisiert:** 15. Januar 2026
 
 Alle Dokumentationen, Guides und Trainingsmaterialien für das VW BTO API Analysis Projekt.
 
@@ -429,12 +429,18 @@ Haben Sie Verbesserungsvorschläge oder Fehler gefunden?
 2. Schlagen Sie Änderungen vor
 3. Teilen Sie Ihre Erfahrungen mit dem Team
 
+**Wichtig bei Doku-Änderungen:**
+- Pflegen Sie die Versionierung mit (Header: `Version` und `Zuletzt aktualisiert`).
+- Ergänzen Sie relevante Änderungen zusätzlich in der Tabelle unter „Version History“.
+
 ---
 
 ## 📅 Version History
 
 | Version | Datum | Änderungen |
 |---------|-------|------------|
+| 2.2 | 15.01.2026 | Meta-Format vereinheitlicht (Zuletzt aktualisiert statt Datum) |
+| 2.1 | 15.01.2026 | Hinweis: Versionierung bei Doku-Änderungen ergänzt |
 | 1.0 | 13.01.2026 | Erste Version erstellt |
 
 ---
@@ -459,5 +465,5 @@ Bei Fragen wenden Sie sich an das Team oder konsultieren Sie die Troubleshooting
 ---
 
 **Erstellt für:** VW BTO duc-vehicle API Analyse  
-**Datum:** 13. Januar 2026  
-**Version:** 1.0
+**Zuletzt aktualisiert:** 15. Januar 2026  
+**Version:** 2.2

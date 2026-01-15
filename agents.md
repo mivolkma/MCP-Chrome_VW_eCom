@@ -1,7 +1,7 @@
 # 🤖 AGENTS - Arbeitsanweisungen & Memory
 
-**Version:** 1.0  
-**Zuletzt aktualisiert:** 13. Januar 2026  
+**Version:** 1.2  
+**Zuletzt aktualisiert:** 15. Januar 2026  
 **Status:** ✅ Production-Ready
 
 **DIES IST DIE ZENTRALE REFERENZ FÜR ALLE AGENTS**
@@ -221,6 +221,7 @@ ls .secrets/credentials.json
 ✓ Ergebnisse in results/YYYY-MM-DD_HH-MM-SS/ speichern
 ✓ Credentials IMMER aus .secrets/ laden
 ✓ Sensitive Daten im Memory halten, NICHT in Dateien
+✓ Bei Änderungen an Anleitungen/Dokumentation: Versionierung mitpflegen (Header/Footer: `Version`, `Datum`/`Zuletzt aktualisiert` + ggf. Versionsverlauf/Changelog)
 ✓ Bei Fragen: Siehe QUICK-REFERENCE.md
 ```
 
@@ -229,6 +230,10 @@ ls .secrets/credentials.json
 # 1. Status checken
 git status
 # MUSS zeigen: "nothing to commit, working tree clean"
+
+# 1a. Wenn Dokumentation/Anleitungen geändert wurden:
+#    - `Version` + `Datum`/`Zuletzt aktualisiert` aktualisieren
+#    - ggf. Versionsverlauf/Changelog ergänzen
 
 # 2. NIEMALS diese Dateien in staging area:
 #    - .secrets/credentials.json
@@ -493,6 +498,7 @@ EFFIZIENT ARBEITEN = Weniger Dateien, bessere Struktur, keine Duplikate
 ---
 
 **VERSIONSVERLAUF:**
+- v1.2 (15.01.2026): Regel ergänzt: Bei Doku-Änderungen immer Version/Datum/Changelog mitpflegen (inkl. Vor-dem-Commit-Check)
 - v1.1 (13.01.2026): Fehler 5 hinzugefügt - Warnung vor Dokumentations-Duplikaten, Efficiency-Checkliste erweitert
 - v1.0 (13.01.2026): Erste Version mit 5 kritischen Sicherheitsregeln, Phishing-Schutz
 

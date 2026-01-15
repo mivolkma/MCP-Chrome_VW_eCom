@@ -339,10 +339,18 @@ Nach erfolgreicher Durchführung:
 
 ---
 
+## 🧾 Pflege & Versionierung dieser Anleitung
+
+Wenn Sie Inhalte dieser Anleitung ändern (z.B. Schritte, URLs, Level-Definitionen):
+- Aktualisieren Sie die Angaben am Dokumentende (**Version** und **Datum**).
+- Dokumentieren Sie größere Änderungen zusätzlich im zentralen Changelog in [README.md](README.md) unter „Version History“.
+
+---
+
 **Viel Erfolg bei Ihren Tests!** 🚀
 
 ---
 
-**Version:** 1.0  
-**Datum:** 13. Januar 2026  
+**Version:** 1.2  
+**Zuletzt aktualisiert:** 15. Januar 2026  
 **Erstellt für:** VW BTO duc-vehicle API Analyse Training
