@@ -17,7 +17,7 @@ Das Projekt verwendet **Windows-Umgebungsvariablen**, um benutzer-unabhängig zu
 ### **`$env:USERPROFILE`** (Dein Windows-Benutzerverzeichnis)
 ```powershell
 # Beispiel Ausgabe (wird automatisch ersetzt):
-C:\Users\[USERNAME]
+<USERPROFILE>
 
 # PowerShell-Befehl zum Prüfen:
 echo $env:USERPROFILE
@@ -50,9 +50,7 @@ Diese Variablen werden automatisch in alle Skripte eingebunden:
 # WORKSPACE (Projekt-Verzeichnis)
 $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 
-# Beispiel: C:\Users\actualWindowsUser\Documents\AI_WorkDir (für Benutzer "actualWindowsUser")
-# Beispiel: C:\Users\max\Documents\AI_WorkDir             (für Benutzer "max")
-# Beispiel: C:\Users\anna\Documents\AI_WorkDir            (für Benutzer "anna")
+# Beispiel (Schema): <USERPROFILE>\Documents\AI_WorkDir
 ```
 
 ```powershell
@@ -76,7 +74,7 @@ $CHROME_PROFILE = "$env:USERPROFILE\.cache\chrome-devtools-mcp"
 ### **Beispiel 1: Datei ausführen**
 ```powershell
 # ❌ FALSCH - hardcodierter Pfad
-& "C:\Users\actualWindowsUser\Documents\AI_WorkDir\chrome-mcp-start.ps1"
+& "<ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.ps1"
 
 # ✅ RICHTIG - Variable benutzen
 $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
@@ -86,7 +84,7 @@ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 ### **Beispiel 2: Ergebnisse speichern**
 ```powershell
 # ❌ FALSCH - hardcodierter Pfad
-$result | Out-File "C:\Users\actualWindowsUser\Documents\AI_WorkDir\results\analysis.md"
+$result | Out-File "<ABSOLUTER_WORKSPACE_PFAD>\results\analysis.md"
 
 # ✅ RICHTIG - Variable benutzen
 $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
@@ -126,9 +124,9 @@ Wenn Sie neue Dokumentationen schreiben:
 
 ### ❌ **DON'T - Hardcodierte Pfade:**
 ```
-✗ C:\Users\actualWindowsUser\Documents\AI_WorkDir
-✗ C:\Users\actualWindowsUser\results\
-✗ C:\Users\[beliebiger Name]\Documents\
+✗ <USERPROFILE>\Documents\AI_WorkDir
+✗ <USERPROFILE>\results\
+✗ <USERPROFILE>\Documents\
 ```
 
 ### 📝 **Beschreibende Alternative:**
@@ -179,10 +177,10 @@ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 
 | Benutzer | $env:USERPROFILE | $WORKSPACE |
 |----------|------------------|-----------|
-| actualWindowsUser | C:\Users\actualWindowsUser | C:\Users\actualWindowsUser\Documents\AI_WorkDir |
-| max | C:\Users\max | C:\Users\max\Documents\AI_WorkDir |
-| anna | C:\Users\anna | C:\Users\anna\Documents\AI_WorkDir |
-| admin | C:\Users\admin | C:\Users\admin\Documents\AI_WorkDir |
+| actualWindowsUser | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| max | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| anna | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| admin | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
 
 **Das Projekt funktioniert für ALLE Benutzer - keine Anpassung nötig!**
 

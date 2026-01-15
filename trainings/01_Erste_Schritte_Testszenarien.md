@@ -53,12 +53,12 @@ Diese Anleitung führt Sie durch praktische Test-Szenarien nach der Installation
 Mit HTTP Basic Auth zur VW Staging-Umgebung navigieren
 
 ### Vorbereitung
-Stellen Sie sicher, dass `credentials.json` existiert:
+Stellen Sie sicher, dass `.secrets/credentials.json` existiert (nicht committen):
 ```json
 {
   "vw_staging": {
-    "username": "onehub-cms-user",
-    "password": "Tp5a38TCiosv"
+    "username": "<VW_STAGING_USERNAME>",
+    "password": "<VW_STAGING_PASSWORD>"
   }
 }
 ```
@@ -71,7 +71,11 @@ https://cs-stage-vw.lighthouselabs.eu/de1/konfigurator.html/der-id-5/energy-sond
 ### Befehl
 ```
 Öffne einen Chrome Browser und navigiere zu:
-https://onehub-cms-user:Tp5a38TCiosv@cs-stage-vw.lighthouselabs.eu/de1/konfigurator.html/der-id-5/energy-sondermodelle/energy?buildabilityStatus=buildable&category=private&carlineId=30450&salesGroupId=36330&trimName=ENERGY
+https://cs-stage-vw.lighthouselabs.eu/de1/konfigurator.html/der-id-5/energy-sondermodelle/energy?buildabilityStatus=buildable&category=private&carlineId=30450&salesGroupId=36330&trimName=ENERGY
+
+Wenn ein HTTP Basic Auth Dialog erscheint:
+- Benutzername/Passwort aus `.secrets/credentials.json` eingeben
+- Keine Credentials in die URL schreiben (Browser-History/Logs)
 
 Warte 5 Sekunden bis die Seite vollständig geladen ist.
 ```
@@ -96,8 +100,10 @@ Automatisch zum Checkout navigieren
 
 ### Befehl
 ```
-1. Öffne Chrome und navigiere mit den Credentials aus credentials.json zu:
-   https://onehub-cms-user:Tp5a38TCiosv@cs-stage-vw.lighthouselabs.eu/de1/konfigurator.html/der-id-5/energy-sondermodelle/energy?buildabilityStatus=buildable&category=private&carlineId=30450&salesGroupId=36330&trimName=ENERGY
+1. Öffne Chrome und navigiere mit den Credentials aus `.secrets/credentials.json` zu:
+  https://cs-stage-vw.lighthouselabs.eu/de1/konfigurator.html/der-id-5/energy-sondermodelle/energy?buildabilityStatus=buildable&category=private&carlineId=30450&salesGroupId=36330&trimName=ENERGY
+
+  Wenn ein HTTP Basic Auth Dialog erscheint: Credentials aus `.secrets/credentials.json` eingeben
 
 2. Warte 5 Sekunden
 
@@ -200,7 +206,7 @@ Ich möchte eine vollständige BTO duc-vehicle Analyse durchführen.
 
 Verwende die Anleitung aus BTO_duc-vehicle_PROMPT.md und befolge alle Schritte:
 
-1. Lade die Credentials aus credentials.json
+1. Lade die Credentials aus `.secrets/credentials.json`
 2. Öffne Chrome und navigiere zur VW Konfigurator URL mit Authentication
 3. Warte bis die Seite vollständig geladen ist (5 Sekunden)
 4. Finde den "Online leasen" Link und klicke darauf
@@ -294,7 +300,10 @@ Typische Ausführungszeiten pro Szenario:
 
 ### Fehler 2: "401 Unauthorized"
 **Ursache:** Credentials nicht korrekt übergeben  
-**Lösung:** URL-Format prüfen: `https://user:pass@domain.com`
+**Lösung:**
+- Wenn ein HTTP Basic Auth Dialog erscheint: Credentials aus `.secrets/credentials.json` eingeben
+- Keine Credentials in die URL schreiben (Browser-History/Logs/Screenshots)
+- Bei Automatisierung: Playwright `http_credentials` verwenden (siehe Runner in `tools/execute_smoketest.py`)
 
 ### Fehler 3: "duc-vehicle Call nicht gefunden"
 **Ursache:** Zu früh nach Network Requests gesucht  

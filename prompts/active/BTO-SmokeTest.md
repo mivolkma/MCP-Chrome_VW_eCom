@@ -5,13 +5,19 @@ Ziel: Schneller Smoke über die kritischen Pfade (Tabs 1–4) + Preisbox/Edit + 
 Wichtig: Bevor der Smoke startet, muss die Test-URL bekannt sein.
 
 ➡️ Bitte antworte jetzt mit der Test-URL, unter der der Smoketest stattfinden soll.
-- Bitte nur Host + Path (ohne Query-Parameter wie `oneapiKey`, `endpoint`, `signature`, `token`).
-- Falls du nur eine vollständige URL inkl. Query hast: sag Bescheid, ich helfe beim Redacting.
+- Du darfst die vollständige Start-URL inkl. Query liefern, wenn sie für den korrekten Journey-Start erforderlich ist.
+- Wichtig: Der Agent nutzt die URL intern vollständig, speichert/loggt aber nur Host+Path (Query/Token redacted) in Reports/Results.
 
 Rahmenbedingungen:
 - Keine Secrets/Tokens/Query-Strings in Logs/Doku.
 - E-Mail immer: `test@test.de`
 - Bekannter Chrome-Dialog: `.eu` → Credentials; `.io` → schließen.
+
+## Agenten-Verhalten (Autonom)
+- Der Agent fragt beim Start nach der Test-URL und führt danach Setup + Test automatisiert aus.
+- Setup ist keine Testausführung: Auth (Basic), Cookie-Banner/Modals wegklicken, „sauberer Startzustand“ via Screenshot dokumentieren.
+- Nach jedem Lauf: Ergebnisse prüfen, Triage durchführen (Script-Issue vs. App-Defekt) und nächste Schritte ableiten.
+- Bei App-Defekt: Evidence Pack vorbereiten (Screenshots/Logs/Repro-Schritte); der standardisierte Bug-Report wird später vom Nutzer erstellt.
 
 Testcharta (git-verfügbar, v1.0):
 - Vollständig: [prompts/testdata/bto/v1.0/charter_full.md](prompts/testdata/bto/v1.0/charter_full.md)
@@ -43,17 +49,22 @@ Testcharta (git-verfügbar, v1.0):
 
 ## Durchführung (kurz)
 
-### A) Live Tracer installieren (vor CTA-Klick)
+### A) Automatisierter Lauf (empfohlen)
+- Runner starten: `tools/run_bto_checkout.ps1`
+- Start-URL bei Prompt einfügen (vollständig inkl. Query ist ok; Artefakte bleiben redacted).
+- Artefakte liegen danach unter `results/bto-checkout/runs/<timestamp>/`.
+
+### B) Live Tracer installieren (vor CTA-Klick)
 - In DevTools/MCP per `evaluate_script` das Snippet `tools/snippets/trace_duc_entrypoint.js` injizieren.
 
-### B) Klick „Zum Leasingantrag“
+### C) Klick „Zum Leasingantrag“
 - Network prüfen: `processOpportunities` + `duc-leasing`.
 
-### C) FSAG URL auslesen
+### D) FSAG URL auslesen
 - redacted: `window.__FSAG_ENTRY_URL`
 - optional full (nur lokal): `window.__BTO_ENABLE_FULL_FSAG_URL()` dann `window.__FSAG_ENTRY_URL_FULL`
 
-### D) Optional: Payload-Check lokal
+### E) Optional: Payload-Check lokal
 - `python tools/validate_process_opportunities_payload.py --payload results/.../processOpportunities_payload_redacted.json --email test@test.de --duration 36 --mileage 15000 --down-payment 0`
 
 ## Evidence (lokal)

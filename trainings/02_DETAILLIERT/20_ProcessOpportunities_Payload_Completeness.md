@@ -90,12 +90,12 @@ Wichtig: Der DUC-Request ist häufig eine URL mit vielen Query-Parametern (z.B. 
 
 Beispiel:
 ```powershell
-C:/Users/mivolkma/Documents/AI_WorkDir/.venv/Scripts/python.exe tools/extract_fsag_entry_url.py --input results/bto-checkout/runs/<RUN>/duc_leasing_response.json
+& .\.venv\Scripts\python.exe tools/extract_fsag_entry_url.py --input results/bto-checkout/runs/<RUN>/duc_leasing_response.json
 ```
 
 Für den VPN-Manuallauf:
 ```powershell
-C:/Users/mivolkma/Documents/AI_WorkDir/.venv/Scripts/python.exe tools/extract_fsag_entry_url.py --input results/bto-checkout/runs/<RUN>/duc_leasing_response.json --full
+& .\.venv\Scripts\python.exe tools/extract_fsag_entry_url.py --input results/bto-checkout/runs/<RUN>/duc_leasing_response.json --full
 ```
 
 ### Alternative (empfohlen für den Testlauf): Live-Extraktion direkt im Browser
@@ -120,14 +120,14 @@ Es gibt ein lokales Tool, das den Payload nach den wichtigsten Journey-Werten du
 
 ### Variante A: Mit Expect-JSON
 ```powershell
-C:/Users/mivolkma/Documents/AI_WorkDir/.venv/Scripts/python.exe tools/validate_process_opportunities_payload.py `
+& .\.venv\Scripts\python.exe tools/validate_process_opportunities_payload.py `
   --payload results/bto-checkout/runs/<RUN>/processOpportunities_payload_redacted.json `
   --expect tools/examples/process_expect.example.json
 ```
 
 ### Variante B: Mit Flags (Quick Check)
 ```powershell
-C:/Users/mivolkma/Documents/AI_WorkDir/.venv/Scripts/python.exe tools/validate_process_opportunities_payload.py `
+& .\.venv\Scripts\python.exe tools/validate_process_opportunities_payload.py `
   --payload results/bto-checkout/runs/<RUN>/processOpportunities_payload_redacted.json `
   --email test@test.de `
   --duration 36 --mileage 15000 --down-payment 0

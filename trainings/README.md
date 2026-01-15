@@ -319,20 +319,22 @@ AI_WorkDir/
 
 ## 🔧 Wichtige Dateien
 
-### credentials.json
-Speichert alle Zugangsdaten:
+### .secrets/credentials.json
+Speichert alle Zugangsdaten (lokal, nicht committen):
 ```json
 {
   "vw_staging": {
-    "username": "onehub-cms-user",
-    "password": "Tp5a38TCiosv",
+      "username": "<VW_STAGING_USERNAME>",
+      "password": "<VW_STAGING_PASSWORD>",
     "base_url": "https://cs-stage-vw.lighthouselabs.eu"
   },
   "api_keys": {
-    "oneapi_key": "h0CQWvPYSBvp5KYXUpRU4FpZrnl0tZx1"
+      "oneapi_key": "<ONEAPI_KEY>"
   }
 }
 ```
+
+Wichtig: Legen Sie echte Credentials lokal in `.secrets/credentials.json` ab (wird nicht committet) und verwenden Sie hier nur Platzhalter.
 
 ### BTO_duc-vehicle_PROMPT.md
 Der Haupt-Workflow-Prompt, der alle Schritte definiert:
@@ -360,7 +362,9 @@ Die Ergebnis-Dokumentation mit:
 **➡️ Lösung:** Chrome-Profile löschen und Browser manuell schließen
 
 ### ❌ "401 Unauthorized"
-**➡️ Lösung:** Credentials in URL einbetten: `https://user:pass@domain.com`
+**➡️ Lösung:**
+- Wenn ein HTTP Basic Auth Dialog erscheint: Credentials aus `.secrets/credentials.json` eingeben
+- Keine Credentials in die URL schreiben (Browser-History/Logs)
 
 ### ❌ duc-vehicle Call nicht gefunden
 **➡️ Lösung:** Wartezeiten erhöhen, nach Checkout-Load suchen

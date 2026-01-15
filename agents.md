@@ -24,19 +24,19 @@ $PROMPTS = "$WORKSPACE\prompts"
 
 **Lokal speichern in:**
 ```
-✓ $WORKSPACE\results/          (z.B. C:\Users\[USERNAME]\Documents\AI_WorkDir\results)
-✓ $WORKSPACE\.secrets/         (z.B. C:\Users\[USERNAME]\Documents\AI_WorkDir\.secrets)
-✓ $WORKSPACE\prompts/          (z.B. C:\Users\[USERNAME]\Documents\AI_WorkDir\prompts)
+✓ $WORKSPACE\results/          (z.B. <USERPROFILE>\Documents\AI_WorkDir\results)
+✓ $WORKSPACE\.secrets/         (z.B. <USERPROFILE>\Documents\AI_WorkDir\.secrets)
+✓ $WORKSPACE\prompts/          (z.B. <USERPROFILE>\Documents\AI_WorkDir\prompts)
 
 NIEMALS SPEICHERN IN:
-✗ $env:USERPROFILE\Desktop\    (z.B. C:\Users\[USERNAME]\Desktop)
-✗ $env:USERPROFILE\Downloads\  (z.B. C:\Users\[USERNAME]\Downloads)
+✗ $env:USERPROFILE\Desktop\    (z.B. <USERPROFILE>\Desktop)
+✗ $env:USERPROFILE\Downloads\  (z.B. <USERPROFILE>\Downloads)
 ✗ OneDrive / Cloud-Speicher
 ✗ Externe Festplatten (ohne Admin-Freigabe)
 ✗ Chat-Verlauf (ChatGPT, Claude, etc.)
 ```
 
-**[USERNAME] wird automatisch durch Ihren Windows-Benutzernamen ersetzt!**
+**Hinweis:** `<USERPROFILE>` entspricht z.B. `$env:USERPROFILE`.
 
 ### 2. **CREDENTIALS - NIEMALS HARDCODEN ODER EXTERN SPEICHERN**
 ```
@@ -201,14 +201,18 @@ AI_WorkDir/
 # 1. Workspace aktualisieren
 git pull
 
-# 2. Credentials checken
+# 2. Python Virtual Environment aktivieren (SEHR WICHTIG!)
+.\\.venv\\Scripts\\Activate.ps1
+# → Die Konsole sollte nun (.venv) am Anfang der Zeile anzeigen
+
+# 3. Credentials checken
 ls .secrets/credentials.json
 # → Muss existieren und NICHT in git sein
 
-# 3. Chrome-MCP starten (falls Browser-Automation nötig)
-.\chrome-mcp-start.ps1
+# 4. Chrome-MCP starten (falls Browser-Automation nötig)
+.\\chrome-mcp-start.ps1
 
-# 4. Diese Datei in Memory laden
+# 5. Diese Datei in Memory laden
 # → "Load agents.md context for security rules"
 ```
 
@@ -246,14 +250,60 @@ git push
 
 ## 🎯 TYPISCHE WORKFLOWS
 
-### Workflow 1: VW BTO API Analyse
+### Workflow 1: Standardized Test Execution (ISTQB-compliant)
 ```
-1. Browser-Session öffnen (Chrome Port 9333)
-2. API-Calls mit Chrome DevTools analysieren
-3. Ergebnisse in results/bto-duc-vehicle/YYYY-MM-DD_HH-MM-SS/ speichern
-4. Summary erstellen
-5. NIEMALS Credentials/Keys in Ergebnisse schreiben
-6. NIEMALS results/ in Git committen
+1. **Test-Setup:**
+   - Python Virtual Environment aktivieren: `.\\.venv\\Scripts\\Activate.ps1`
+   - Browser-Session öffnen (z.B. Chrome Port 9333).
+   - Test-URL und Testfall-Dokument (z.B. `BTO-SmokeTest.md`) identifizieren.
+
+2. **Testumgebung erfassen (Pre-Condition):**
+   - Script `tools/collect_environment_info.py --url [Test-URL]` ausführen.
+   - Das Skript speichert CMS-Version, Feature-App-Versionen, Browser-Version etc. in einer `environment_snapshot.json`.
+
+3. **Testbericht-Vorlage generieren:**
+   - Script `tools/generate_test_report.py` ausführen.
+   - Das Skript liest die Testfälle und die `environment_snapshot.json` ein.
+   - Erstellt einen `Test_Report.html` mit allen Umgebungs-Infos und leeren Testfall-Platzhaltern.
+
+4. **Testdurchführung (Execution):**
+   - Testschritte gemäß Testfall-Dokument ausführen.
+   - Für jeden Schritt Screenshot im `screenshots`-Ordner speichern (z.B. `TC-01_Step-01.png`).
+   - Parallele Analyse von API-Calls oder Konsolen-Logs bei Bedarf.
+   - **WICHTIG:** Tests in verschiedenen Viewports (Desktop, Tablet, Mobil) durchführen, falls gefordert.
+
+5. **Ergebnis-Dokumentation (Post-Condition):**
+   - Alle Artefakte (HTML-Report, Screenshots, Logs, `environment_snapshot.json`) in einem versionierten Ordner unter `results/[Test-Name]/YYYY-MM-DD_HH-MM-SS/` speichern.
+   - NIEMALS Credentials/Keys in Ergebnisse schreiben.
+   - NIEMALS den `results/` Ordner in Git committen.
+```
+
+### Workflow 1a: Autonomer Test-Agent (Smoke/Regression)
+```
+Ziel: So viel manuelle Arbeit wie möglich abnehmen, um mehr Szenarien mit höherer Qualität abzudecken.
+
+PRINZIPIEN:
+1) Vorbereitung ist Agenten-Aufgabe (Setup-Phase)
+   - Ergebnisordner bereinigen (latest/), bevor ein neuer Lauf beginnt.
+   - Authentifizierung automatisch aus .secrets/credentials.json laden.
+   - Blocker aktiv beseitigen (z.B. Cookie-Banner, Modals, Interstitials).
+   - Stabilität: sinnvolle Wait-Strategie (DOM-Ready, sichtbare Checkpoints), nicht nur Sleeps.
+
+2) Ausführung ist Agenten-Aufgabe (Execution-Phase)
+   - Erst NACH erfolgreichem Setup beginnt der eigentliche Test.
+   - Früh validieren: erste Läufe absichtlich auf wenige Schritte begrenzen (z.B. 3), bis stabile Screenshots/Ergebnisse vorliegen.
+
+3) Analyse ist Agenten-Aufgabe (Triage)
+   - Ergebnisse prüfen und Schlüsse ziehen: Script-Issue vs. Anwendungsdefekt.
+   - Script-Issues selbstständig beheben (Selector-Strategie, Waits, Report-Update, Credentials-Mapping, etc.).
+
+4) Bug-Report Vorbereitung ist Agenten-Aufgabe (Evidence Pack)
+   - Wenn ein echter Anwendungsdefekt wahrscheinlich ist: Beweismappe erstellen (Screenshots, Logs, reproduzierbare Schritte, URL/Build-Info soweit erlaubt).
+   - Der formale, standardisierte Bug-Report wird später durch den Benutzer erstellt (spezielle Anforderungen folgen).
+
+5) Reporting an den Benutzer
+   - Kurz und klar: Status, wichtigste Findings, nächste Schritte.
+   - Keine Secrets/Keys/Query-Token in Logs oder Artefakten.
 ```
 
 ### Workflow 2: Neuen Prompt erstellen

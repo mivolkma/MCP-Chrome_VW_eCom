@@ -279,9 +279,18 @@ VW Build-to-Order Fahrzeugkonfiguration API-Analyse:
 
 ### **Verwendung im Prompt:**
 ```javascript
-// Credentials laden
+// Credentials laden (lokal aus .secrets/credentials.json)
+// WICHTIG: Credentials NICHT in die URL einbetten (History/Logs/Screenshots).
+// Stattdessen:
+// - Browser/HTTP Basic Auth Dialog verwenden ODER
+// - in Playwright via http_credentials arbeiten (siehe tools/execute_smoketest.py)
 const creds = require('./.secrets/credentials.json');
-const url = `https://${creds.vw_staging.username}:${creds.vw_staging.password}@...`;
+
+// Beispiel (konzeptionell):
+// const context = await browser.newContext({
+//   httpCredentials: { username: creds.vw_staging.username, password: creds.vw_staging.password }
+// });
+// await page.goto(creds.vw_staging.base_url + '/konfigurator.html/...');
 ```
 
 ---

@@ -33,6 +33,8 @@ MEINE AUFGABEN:
 2. API-Call Analysen durchführen
 3. Ergebnisse strukturiert LOKAL dokumentieren
 4. Workflows als wiederverwendbare Prompts erstellen
+5. Tests autonom ausführen: Setup vorbereiten, Ergebnisse triagieren, Script-Issues selbst beheben
+6. Bei wahrscheinlichem App-Defekt: Evidence Pack vorbereiten (Screenshots/Logs/Repro) – Bug-Report macht später der Nutzer
 
 SICHERHEITS-REGELN (KRITISCH!):
 ✓ Ergebnisse in results/ speichern (LOKAL)

@@ -13,11 +13,12 @@
                 "steps": [
                     {
                         "action": "Open URL",
-                        "value": "/konfigurator.html/__app1/id4-gtx-individualausstattung/"
+                        "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "start_checkout",
+                        "name": "Online leasen"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a CTA for starting the eCommerce journey is available in the summary page of the configurator feature app.\n- the eCom CTA is active and clickable.\n- clicking on the eCom CTA starts the corresponding eCommerce journey."
@@ -95,8 +96,24 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "eCom page loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_tab_slider_present",
+                        "name": "tab slider"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_price_box_present",
+                        "name": "price box"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_sticky_bar_present",
+                        "name": "sticky bar / next step"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the eCom CTA opens a new page and starts with the personal data tab.\n- the eCom page displays a tab slider, highlighted personal data tab, a price box, the content of the current eCom journey step, the sticky bar and the Next Step CTA, and the price and leasing offer disclaimers at the bottom of it."
@@ -174,8 +191,9 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_tab_slider_present",
+                        "name": "tab slider"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the tab slider displays many tabs that cover all eCom journey steps.\n- the tabs that have not been accessed yet appear deactivated.\n- the slider has a right and left functioning sliding arrows."
@@ -253,8 +271,9 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_price_box_present",
+                        "name": "price box"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the price box is displayed at the right side of the eCom page.\n- the correct information has been passed on to the eCommerce feature app and is displayed in the price box, for example the car's name, the selected fincing parameters, and the total price."
@@ -333,7 +352,8 @@
                     },
                     {
                         "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "role": "button",
+                        "name": "Angebot bearbeiten"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possible."
@@ -412,7 +432,8 @@
                     },
                     {
                         "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "role": "button",
+                        "name": "Weiter"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on the sticky bar.\n- clicking the Next Step CTA always leads to the next step when the current step is completed."
@@ -491,7 +512,7 @@
                     },
                     {
                         "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "data-testid": "form-wrapper"
                     }
                 ],
                 "expectedResult": "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the summary step is accessed, the CO2 class disclaimer reference and text is also displayed."

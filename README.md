@@ -136,6 +136,11 @@ AI_WorkDir/
 $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 & "$WORKSPACE\chrome-mcp-start.bat"
 
+# BTO Checkout Smoketest Runner (Playwright)
+# - Fragt nach der dynamischen Start-URL (inkl. Query möglich)
+# - Loggt/speichert redacted (nur Host+Path)
+& "$WORKSPACE\tools\run_bto_checkout.ps1"
+
 # Workspace öffnen
 cd "$env:USERPROFILE\Documents\AI_WorkDir"
 

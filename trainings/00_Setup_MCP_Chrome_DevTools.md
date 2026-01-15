@@ -68,14 +68,14 @@ Fügen Sie folgende Konfiguration in Ihre `settings.json` ein:
     "chrome-devtools-mcp": {
       "command": "node",
       "args": [
-        "C:\\Users\\[IHR-BENUTZERNAME]\\AppData\\Roaming\\npm\\node_modules\\@modelcontextprotocol\\server-chrome-devtools\\dist\\index.js"
+        "<npm_global_root>\\@modelcontextprotocol\\server-chrome-devtools\\dist\\index.js"
       ]
     }
   }
 }
 ```
 
-**🚨 WICHTIG:** Ersetzen Sie `[IHR-BENUTZERNAME]` mit Ihrem Windows-Benutzernamen!
+**Hinweis:** `<npm_global_root>` erhalten Sie über `npm root -g`.
 
 ### 3.3 Pfad zum MCP Server ermitteln
 
@@ -87,9 +87,9 @@ npm root -g
 
 Hängen Sie dann `\@modelcontextprotocol\server-chrome-devtools\dist\index.js` an.
 
-**Beispiel für Benutzer "mivolkma":**
+Beispiel (Schema):
 ```
-C:\Users\mivolkma\AppData\Roaming\npm\node_modules\@modelcontextprotocol\server-chrome-devtools\dist\index.js
+<npm_global_root>\@modelcontextprotocol\server-chrome-devtools\dist\index.js
 ```
 
 ### 3.4 Alternative: npx verwenden (empfohlen)
@@ -140,7 +140,7 @@ code --install-extension GitHub.copilot-chat
 
 1. Schließen Sie **alle** VS Code Fenster
 2. Starten Sie VS Code neu
-3. Öffnen Sie Ihren Workspace: `c:\Users\[IHR-NAME]\Documents\AI_WorkDir`
+3. Öffnen Sie Ihren Workspace: `<USERPROFILE>\Documents\AI_WorkDir` (z.B. über "Datei → Ordner öffnen")
 
 ---
 
@@ -184,13 +184,13 @@ Zeige mir alle verfügbaren MCP Chrome Tools
 
 ### 7.1 Credentials vorbereiten
 
-Stellen Sie sicher, dass die Datei `credentials.json` im Workspace existiert:
+Stellen Sie sicher, dass die Datei `.secrets/credentials.json` im Workspace existiert (nicht committen):
 
 ```json
 {
   "vw_staging": {
-    "username": "onehub-cms-user",
-    "password": "Tp5a38TCiosv",
+    "username": "<VW_STAGING_USERNAME>",
+    "password": "<VW_STAGING_PASSWORD>",
     "base_url": "https://cs-stage-vw.lighthouselabs.eu"
   }
 }
@@ -266,12 +266,10 @@ Get-Command chrome
 **Ursache:** Die Seite wurde nicht vollständig geladen oder Authentifizierung fehlt
 
 **Lösung:**
-1. Prüfen Sie die credentials.json
+1. Prüfen Sie `.secrets/credentials.json`
 2. Warten Sie länger (erhöhen Sie Wartezeiten auf 5-10 Sekunden)
-3. Stellen Sie sicher, dass die URL mit Credentials formatiert ist:
-   ```
-   https://username:password@domain.com
-   ```
+3. Falls ein HTTP Basic Auth Dialog erscheint: Benutzername/Passwort aus `.secrets/credentials.json` eingeben
+4. Keine Credentials in die URL schreiben (Browser-History/Logs)
 
 ---
 
@@ -323,7 +321,7 @@ $env:PATH += ";$env:APPDATA\npm"
 - [ ] VS Code neu gestartet
 - [ ] MCP Tools im Copilot Chat verfügbar
 - [ ] Chrome-Verbindung erfolgreich getestet
-- [ ] credentials.json vorhanden
+- [ ] .secrets/credentials.json vorhanden
 - [ ] Erster duc-vehicle Test erfolgreich
 
 ---

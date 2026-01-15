@@ -21,28 +21,79 @@ Sichere Verwaltung von GitHub Personal Access Tokens für Git Push/Pull Operatio
 ## 🔑 Token erstellen & speichern
 
 ### **Schritt 1: Neuen Token auf GitHub erstellen**
+
+Du kannst entweder **Fine-grained** (empfohlen) oder **Classic** verwenden.
+
+#### Option A: Fine-grained Personal Access Token (empfohlen)
+Für `git push` reicht ein **Fine-grained PAT** mit Repo-Zugriff + minimalen Berechtigungen.
+
+Navigation:
+```
+GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+→ "Generate new token"
+```
+
+Empfohlene Einstellungen:
+- **Resource owner**: dein User oder deine Org
+- **Repository access**: "Only select repositories" → dieses Repo auswählen
+- **Permissions**:
+   - **Contents: Read and write** (notwendig für Push)
+   - **Actions: Read and write** (nur nötig, wenn du `.github/workflows/*.yml` pushen/ändern willst)
+   - Alles andere: nur wenn wirklich benötigt
+
+Hinweis:
+- Fine-grained Tokens können strenger sein (z.B. Branch-Schutz, Org-Policies). Wenn Push trotz Token scheitert, prüfe Repo-/Org-Regeln oder nutze testweise Classic.
+
+#### Option B: Personal access token (classic)
+Navigation:
 ```
 GitHub → Settings → Developer settings → Personal access tokens (classic)
 → "Generate new token (classic)"
-→ Scopes:
-  ✅ repo (Full control of repositories)
-  ✅ read:org (Read org membership)
-  ✅ workflow (GitHub Actions)
-→ "Generate token"
 ```
+
+Scopes (typisch/legacy):
+- ✅ `repo`
+- ✅ `workflow` (nötig, wenn du `.github/workflows/*.yml` pushen/ändern willst)
+- ✅ `read:org` (nur wenn du Repo-Zugriff via Org/Teams brauchst)
 
 ### **Schritt 2: Token kopieren (wird NUR 1x angezeigt!)**
 ```
-github_pat_11A2K3VBQ0trudsR863J3q_5Qj5YZgV3b3pRmmLWNfwjqlRWoR8Pr9...
-↑ Kopieren bevor Seite geschlossen wird!
+<DEIN_GITHUB_PAT_TOKEN>
+↑ Token kopieren bevor Seite geschlossen wird!
 ```
 
 ### **Schritt 3: Token lokal speichern**
 
+## ✅ Copy/Paste Quick-Setup (empfohlen, Remote bleibt clean)
+
+Ziel: **Kein Token in Remote-URL**, keine Token-Ausgaben im Terminal, Credentials im **OS Credential Store** (Git Credential Manager).
+
+```powershell
+cd "$env:USERPROFILE\Documents\AI_WorkDir"
+
+# 1) Remote sauber halten (OHNE Token)
+git remote set-url origin "https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git"
+
+# 2) Token lokal ablegen (nur für Setup-Script; Datei ist durch .gitignore geschützt)
+$token = Read-Host "GitHub PAT Token (wird nicht angezeigt)" -AsSecureString
+$plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($token))
+$plain | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
+
+# 3) Credentials in den Credential Manager schreiben (Remote bleibt clean)
+.\setup-github-token.ps1
+
+# 4) Optional: Token-Datei wieder entfernen (Credentials bleiben im OS-Store)
+# Remove-Item ".secrets\github_token" -Force
+
+# 5) Push testen
+git push origin master
+```
+
 **Option A: PowerShell**
 ```powershell
-$token = "github_pat_DEIN_TOKEN_HIER"
-$token | Out-File "$env:USERPROFILE\Documents\AI_WorkDir\.secrets\github_token" -Encoding UTF8 -NoNewline
+$token = Read-Host "GitHub PAT Token (wird nicht angezeigt)" -AsSecureString
+$plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($token))
+$plain | Out-File "$env:USERPROFILE\Documents\AI_WorkDir\.secrets\github_token" -Encoding UTF8 -NoNewline
 ```
 
 **Option B: Manuell**
@@ -83,15 +134,9 @@ git push origin master
 # → GitHub Personal Access Token eingeben (aus .secrets/github_token)
 ```
 
-### **Mit Token in Remote-URL (nicht empfohlen, aber möglich):**
-```powershell
-$token = Get-Content ".secrets\github_token" -Raw
-$user = "mivolkma"
-$repo = "MCP-Chrome_VW_eCom"
-
-git remote set-url origin "https://$($user):$($token)@github.com/$($user)/$($repo).git"
-git push origin master
-```
+### **Mit Token in Remote-URL**
+Nicht empfohlen: Der Token landet dann in `.git/config` und kann versehentlich in Logs/Screenshots auftauchen.
+Nutzen Sie stattdessen den Git Credential Manager oder das Script `setup-github-token.ps1` (speichert Credentials sicher im OS-Store, Remote-URL bleibt clean).
 
 ---
 

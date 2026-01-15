@@ -22,15 +22,31 @@ Ausführliche Anleitung zum Erstellen, Speichern und Verwenden von GitHub Person
 ## 🎯 **5 MINUTEN QUICK-START**
 
 ### **1️⃣ Token auf GitHub erstellen**
+
+Empfehlung: **Fine-grained PAT** (weniger Risiko, Repo-spezifisch). Classic geht weiterhin.
+
+**Option A (empfohlen): Fine-grained Token**
+```
+Gehe zu: https://github.com/settings/tokens?type=beta
+→ "Generate new token"
+→ Resource owner auswählen
+→ Repository access: "Only select repositories" → dieses Repo auswählen
+→ Permissions:
+   ✅ Contents: Read and write   (notwendig für git push)
+   ✅ Actions: Read and write   (nötig, wenn du `.github/workflows/*.yml` pushen/ändern willst)
+→ "Generate token"
+→ KOPIERE DEN TOKEN! (wird nur 1x angezeigt!)
+```
+
+**Option B: Classic Token**
 ```
 Gehe zu: https://github.com/settings/tokens
-→ Klick "Generate new token (classic)"
-→ Gib einen Namen ein (z.B. "MCP-Chrome-VW-eCom")
-→ Wähle diese Scopes:
-   ✅ repo (Full control of repositories)
-   ✅ read:org (Read org membership, teams)
-   ✅ workflow (Update GitHub Actions)
-→ Klick "Generate token"
+→ "Generate new token (classic)"
+→ Scopes (typisch/legacy):
+   ✅ repo
+   ✅ workflow (nötig, wenn du `.github/workflows/*.yml` pushen/ändern willst)
+   ✅ read:org (nur falls benötigt)
+→ "Generate token"
 → KOPIERE DEN TOKEN! (wird nur 1x angezeigt!)
 ```
 
@@ -44,10 +60,9 @@ cd "$env:USERPROFILE\Documents\AI_WorkDir"
 # Führe das Setup-Script aus:
 .\setup-github-token.ps1
 
-# Script fragt dich nach deinem Token
-# → Eingeben und Enter
-# → Script speichert es automatisch
-# → Fragt ob du gleich pushen willst
+# Script fragt dich nach deinem Token (wird nicht angezeigt)
+# → speichert Credentials im OS-Store (Git Credential Manager)
+# → Remote-URL bleibt clean (ohne Token)
 ```
 
 **Option B - Manuell:**
@@ -55,19 +70,28 @@ cd "$env:USERPROFILE\Documents\AI_WorkDir"
 # Öffne PowerShell und gehe zum Workspace:
 cd "$env:USERPROFILE\Documents\AI_WorkDir"
 
-# Speichere deinen Token (ersetze XXXXX mit deinem echten Token):
-$token = "github_pat_11A2K3VBQ0trudsR863J3q_5Qj5YZgV3b3pRmmLWNfwjqlRWoR8Pr9..."
-$token | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
+# Speichere deinen Token (ohne ihn im Terminal auszugeben):
+$token = Read-Host "GitHub PAT Token (wird nicht angezeigt)" -AsSecureString
+$plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($token))
+$plain | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 
-# Verifiziere (sollte "github_token" zeigen):
-ls ".secrets\github_token"
+# Verifiziere (ohne Inhalt auszugeben):
+Test-Path ".secrets\github_token"
 ```
 
 ### **3️⃣ Git konfigurieren**
 ```powershell
-# Falls du nicht das Script verwendet hast:
-$token = Get-Content ".secrets\github_token" -Raw
-git remote set-url origin "https://mivolkma:$($token)@github.com/mivolkma/MCP-Chrome_VW_eCom.git"
+# Empfehlung: Remote ohne Token lassen und Credentials sicher im OS-Store halten.
+# Das Script `setup-github-token.ps1` speichert den Token im Git Credential Manager.
+$user = "<GITHUB_USERNAME>"
+$repo = "<REPO_NAME>"
+git remote set-url origin "https://github.com/$($user)/$($repo).git"
+```
+
+Optionaler Quick-Check (Remote ist clean):
+```powershell
+git remote -v
+# Muss zeigen: https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git
 ```
 
 ### **4️⃣ Pushen!**
@@ -134,26 +158,26 @@ Der Token wird danach NICHT mehr angezeigt!
 $token = Read-Host "Gib deinen Token ein" -AsSecureString | ConvertFrom-SecureString
 
 # Oder direkt:
-$token = "github_pat_11A2K3VBQ0trudsR863J3q_5Qj5YZgV3b3pRmmLWNfwjqlRWoR8Pr9..."
+$token = "<DEIN_GITHUB_PAT_TOKEN>"
 
 # Speichern:
 $token | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 
 # Verifizieren:
 Get-Content ".secrets\github_token"
-# Sollte zeigen: github_pat_xxxxx...
+# Sollte zeigen: <DEIN_GITHUB_PAT_TOKEN>
 ```
 
 **Option B - VS Code:**
 1. Öffne VS Code
 2. Datei → "Open File" → `.secrets/github_token` (wird als neue Datei erstellt)
-3. Kopiere rein: `github_pat_xxxxx...`
+3. Kopiere rein: `<DEIN_GITHUB_PAT_TOKEN>`
 4. Speichern (Ctrl+S)
 
 **Option C - Text Editor:**
 1. Notepad öffnen
 2. Token paste
-3. Speichern als: `C:\Users\[USERNAME]\Documents\AI_WorkDir\.secrets\github_token`
+3. Speichern als: `.secrets\github_token` (im Workspace)
 4. **WICHTIG:** Keine Newlines am Ende!
 
 ---
@@ -168,17 +192,14 @@ Get-Content ".secrets\github_token"
 
 **Manuell:**
 ```powershell
-# Token laden
-$token = Get-Content ".secrets\github_token" -Raw
-$user = "mivolkma"
-$repo = "MCP-Chrome_VW_eCom"
-
-# Remote URL setzen
-git remote set-url origin "https://$($user):$($token)@github.com/$($user)/$($repo).git"
+# Remote URL setzen (ohne Token)
+$user = "<GITHUB_USERNAME>"
+$repo = "<REPO_NAME>"
+git remote set-url origin "https://github.com/$($user)/$($repo).git"
 
 # Verifizieren
 git remote -v
-# Sollte zeigen: https://mivolkma:github_pat_xxxxx...@github.com/mivolkma/MCP-Chrome_VW_eCom.git
+# Sollte zeigen: https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git
 ```
 
 ---
@@ -199,7 +220,7 @@ git push origin master
 
 ```powershell
 # Token speichern (PowerShell)
-$token = "dein_token_hier"
+$token = "<DEIN_GITHUB_PAT_TOKEN>"
 $token | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 
 # Setup durchführen
@@ -207,7 +228,7 @@ $token | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 
 # Manuell konfigurieren
 $token = Get-Content ".secrets\github_token" -Raw
-git remote set-url origin "https://mivolkma:$($token)@github.com/mivolkma/MCP-Chrome_VW_eCom.git"
+git remote set-url origin "https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git"
 
 # Pushen
 git push origin master
@@ -238,9 +259,9 @@ git log --oneline -3
 git status
 # → Sollte .secrets/github_token NICHT anzeigen
 
-# Token sollte NICHT in Dateien sein:
-grep -r "github_pat_" . --exclude-dir=.git
-# → Sollte NICHTS finden außer .secrets/github_token
+# Token sollte NICHT in getrackten Dateien sein:
+git grep -n -I "github_pat_" -- .
+# → Sollte NICHTS finden
 
 # Token sollte existieren:
 Test-Path ".secrets\github_token"
@@ -266,14 +287,13 @@ GitHub → Settings → Developer settings → Personal access tokens
 
 ### **Datei updaten:**
 ```powershell
-# Neuen Token kopieren
-$newToken = "github_pat_NEW_TOKEN_HERE"
+# Neuen Token sicher erfassen (ohne Ausgabe)
+$token = Read-Host "Neuer GitHub PAT Token (wird nicht angezeigt)" -AsSecureString
+$plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($token))
+$plain | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 
-# In Datei speichern
-$newToken | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
-
-# Verifizieren
-Get-Content ".secrets\github_token"
+# Verifizieren (ohne Inhalt auszugeben)
+Test-Path ".secrets\github_token"
 ```
 
 ### **Neu pushen:**
@@ -297,8 +317,9 @@ GitHub → Settings → Developer settings → Personal access tokens
 
 ### **3. Lokal updaten:**
 ```powershell
-$newToken = "github_pat_NEW_TOKEN..."
-$newToken | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
+$token = Read-Host "Neuer GitHub PAT Token (wird nicht angezeigt)" -AsSecureString
+$plain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($token))
+$plain | Out-File ".secrets\github_token" -Encoding UTF8 -NoNewline
 ```
 
 ### **4. Testen:**
@@ -318,12 +339,14 @@ git push origin master
 ### **Problem: "fatal: Authentication failed"**
 ```powershell
 # Lösung 1: Token-Format prüfen
-Get-Content ".secrets\github_token"
-# Muss mit "github_pat_" starten
+$len = (Get-Item ".secrets\github_token").Length
+"Token-Datei vorhanden (Bytes): $len"
+# Hinweis: GitHub PATs beginnen häufig mit "github_pat_" (nicht zwingend)
 
 # Lösung 2: Token in Remote korrekt?
 git remote -v
-# Muss zeigen: https://mivolkma:github_pat_...@github.com/...
+# Empfehlung: Remote OHNE Token (Token gehört in den Credential Manager)
+# Muss zeigen: https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git
 
 # Lösung 3: Token erneuern
 # (Siehe Token erneuern Abschnitt)
@@ -332,8 +355,11 @@ git remote -v
 ### **Problem: "Permission denied (publickey)"**
 ```powershell
 # Dein SSH-Key ist nicht richtig
-# Nutze stattdessen Token über HTTPS:
-git remote set-url origin "https://mivolkma:$token@github.com/mivolkma/MCP-Chrome_VW_eCom.git"
+# Nutze stattdessen HTTPS ohne Token in der URL:
+git remote set-url origin "https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git"
+
+# Dann Credentials einmalig via Git Credential Manager hinterlegen
+# (oder `setup-github-token.ps1` nutzen, falls vorhanden)
 ```
 
 ### **Problem: "remote: Repository not found"**
@@ -344,7 +370,7 @@ git remote -v
 
 # Oder neue Remote setzen:
 git remote remove origin
-git remote add origin "https://mivolkma:$token@github.com/mivolkma/MCP-Chrome_VW_eCom.git"
+git remote add origin "https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git"
 ```
 
 ---

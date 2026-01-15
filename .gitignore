@@ -12,6 +12,10 @@ credentials.local.json
 .env.*.local
 secrets.json
 
+# Kompletten .secrets/-Ordner ignorieren (nur Templates/Doku werden unten per ! wieder erlaubt)
+.secrets/
+.secrets/**
+
 # GitHub Token
 github_token
 .github_token
@@ -48,8 +52,11 @@ pnpm-lock.yaml
 # ============================================================================
 
 # VS Code
+.vscode/settings.json
 .vscode/settings.local.json
 .vscode/**/*.local
+
+!.vscode/settings.example.json
 .vs/
 *.swp
 *.swo
@@ -97,6 +104,10 @@ Thumbs.db
 # ============================================================================
 # PYTHON CACHE
 # ============================================================================
+
+# Python Virtual Environments
+.venv/
+.venv/**
 
 __pycache__/
 **/__pycache__/
@@ -163,6 +174,17 @@ results/**/*
 !.secrets/README.md
 !.secrets/.gitignore
 !.secrets/credentials.example.json
+!.secrets/GITHUB-TOKEN-README.md
+!.secrets/github_token.example
+
+# ============================================================================
+# RE-IGNORE (nach den !-Regeln)
+# ============================================================================
+
+# Python Cache auch in wieder-inkludierten Bäumen ignorieren
+__pycache__/
+**/__pycache__/
+*.pyc
 
 # Konfiguration
 !package.json

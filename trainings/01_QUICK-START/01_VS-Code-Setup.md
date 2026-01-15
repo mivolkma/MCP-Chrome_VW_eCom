@@ -62,6 +62,21 @@ Füge hinzu:
 
 ---
 
+## 🧩 Workspace-Settings (Repo-sicher)
+
+Dieses Repo teilt **keine** persönliche VS-Code-Datei `.vscode/settings.json`, um lokalspezifische Einstellungen nicht zu überschreiben.
+
+- Vorlage im Repo: `.vscode/settings.example.json`
+- Lokale Datei (ignored): `.vscode/settings.json`
+
+Wenn du die Vorlage nutzen willst, kopiere sie lokal:
+
+```powershell
+Copy-Item -Force ".vscode/settings.example.json" ".vscode/settings.json"
+```
+
+---
+
 ## 📚 Detaillierte Dokumentation
 
 Für ausführliche Step-by-Step-Anleitung mit Fehlerbehandlung:

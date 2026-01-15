@@ -21,7 +21,7 @@
 ### **1. agents.md** ✅
 ```
 Alte Struktur:
-✗ c:\Users\mivolkma\Documents\AI_WorkDir\results/
+✗ <ABSOLUTER_WORKSPACE_PFAD>\results\
 
 Neue Struktur:
 ✓ $WORKSPACE\results/
@@ -35,7 +35,7 @@ Neue Struktur:
 ### **2. QUICK-REFERENCE.md** ✅
 ```
 Alte Struktur:
-✗ C:\Users\mivolkma\Documents\AI_WorkDir\chrome-mcp-start.bat
+✗ <ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.bat
 
 Neue Struktur:
 ✓ & "$env:USERPROFILE\Documents\AI_WorkDir\chrome-mcp-start.bat"
@@ -48,8 +48,8 @@ Neue Struktur:
 ### **3. CHROME-MCP-SETUP.md** ✅
 ```
 Alte Struktur:
-✗ "C:\Users\mivolkma\Documents\AI_WorkDir\chrome-mcp-start.ps1"
-✗ /c "C:\Users\mivolkma\Documents\AI_WorkDir\chrome-mcp-start.bat"
+✗ "<ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.ps1"
+✗ /c "<ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.bat"
 
 Neue Struktur:
 ✓ "$WORKSPACE\chrome-mcp-start.ps1"
@@ -63,7 +63,7 @@ Neue Struktur:
 ### **4. README.md** ✅
 ```
 Alte Struktur:
-✗ C:\Users\mivolkma\Documents\AI_WorkDir\chrome-mcp-start.bat
+✗ <ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.bat
 
 Neue Struktur:
 ✓ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
@@ -76,7 +76,7 @@ Neue Struktur:
 ### **5. MIGRATION.md** ✅
 ```
 Alte Struktur:
-✗ rm c:\Users\actualWindowsUser\Documents\AI_WorkDir\BTO_duc-vehicle_PROMPT.md
+✗ rm <ABSOLUTER_WORKSPACE_PFAD>\BTO_duc-vehicle_PROMPT.md
 
 Neue Struktur:
 ✓ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
@@ -88,7 +88,7 @@ Neue Struktur:
 ### **6. COPILOT-CHAT-INIT.md** ✅
 ```
 Alte Struktur:
-✗ Workspace: c:\Users\actualWindowsUser\Documents\AI_WorkDir
+✗ Workspace: <ABSOLUTER_WORKSPACE_PFAD>
 
 Neue Struktur:
 ✓ Workspace: $env:USERPROFILE\Documents\AI_WorkDir (wird automatisch angepasst)
@@ -117,7 +117,7 @@ Eine umfassende Dokumentation zu Umgebungsvariablen:
 
 ### **Haupt-Variablen:**
 ```powershell
-$env:USERPROFILE     # C:\Users\[USERNAME]
+$env:USERPROFILE     # <USERPROFILE>
 $env:USERNAME        # Der aktuelle Windows-Benutzername
 $env:COMPUTERNAME    # Der Computer-Name
 ```
@@ -139,10 +139,10 @@ Das Projekt wurde jetzt für folgende Benutzer getestet:
 
 | Benutzer | USERPROFILE | WORKSPACE |
 |----------|-------------|-----------|
-| actualWindowsUser | C:\Users\actualWindowsUser | C:\Users\actualWindowsUser\Documents\AI_WorkDir |
-| max | C:\Users\max | C:\Users\max\Documents\AI_WorkDir |
-| anna | C:\Users\anna | C:\Users\anna\Documents\AI_WorkDir |
-| admin | C:\Users\admin | C:\Users\admin\Documents\AI_WorkDir |
+| actualWindowsUser | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| max | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| anna | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
+| admin | <USERPROFILE> | <USERPROFILE>\Documents\AI_WorkDir |
 
 ✨ **Funktioniert für ALLE!**
 
@@ -153,10 +153,10 @@ Das Projekt wurde jetzt für folgende Benutzer getestet:
 ### **Vorher (Hardcodiert):**
 ```powershell
 # ❌ Funktioniert nur für actualWindowsUser
-C:\Users\actualWindowsUser\Documents\AI_WorkDir\chrome-mcp-start.bat
+<ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.bat
 
 # Für anderen Benutzer:
-C:\Users\max\Documents\AI_WorkDir\chrome-mcp-start.bat  # Manuell ändern! 😞
+<ABSOLUTER_WORKSPACE_PFAD>\chrome-mcp-start.bat  # Manuell ändern! 😞
 ```
 
 ### **Nachher (Mit Variablen):**
@@ -220,7 +220,7 @@ $WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
 & "$WORKSPACE\scripts\my-script.ps1"
 
 # ❌ FALSCH - Hardcodierte Pfade
-C:\Users\mivolkma\Documents\AI_WorkDir\scripts\my-script.ps1
+<ABSOLUTER_WORKSPACE_PFAD>\scripts\my-script.ps1
 ```
 
 ---

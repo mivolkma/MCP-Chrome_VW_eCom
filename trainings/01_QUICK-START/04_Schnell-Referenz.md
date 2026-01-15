@@ -47,6 +47,13 @@ Nutze Prompt: prompts/active/BTO_duc-vehicle_PROMPT.md
 Speichere in: results/bto-duc-vehicle/latest.md
 ```
 
+### **2b. BTO Checkout Smoketest (Playwright Runner)**
+```powershell
+& "$env:USERPROFILE\Documents\AI_WorkDir\tools\run_bto_checkout.ps1"
+```
+- Start-URL kann dynamisch sein (inkl. Query erforderlich) – Artefakte bleiben redacted (nur Host+Path).
+- Ergebnisse: `results/bto-checkout/runs/<timestamp>/`
+
 ### **3. Ergebnisse archivieren**
 ```
 Verschiebe: results/bto-duc-vehicle/latest.md

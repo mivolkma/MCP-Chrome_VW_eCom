@@ -12,7 +12,8 @@
     
 .NOTES
     - Token wird aus .secrets/github_token gelesen (wird ignoriert)
-    - Remote wird mit Token konfiguriert für sichere Push/Pull
+    - Remote-URL bleibt OHNE Token (kein Leak in .git/config)
+    - Credentials werden im OS-Store gespeichert (Git Credential Manager)
     - Alte Token sollten regelmäßig regeneriert werden
 #>
 
@@ -21,10 +22,17 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-# Pfade
-$WORKSPACE = "$env:USERPROFILE\Documents\AI_WorkDir"
-$TOKEN_FILE = "$WORKSPACE\.secrets\github_token"
-$EXAMPLE_FILE = "$WORKSPACE\.secrets\github_token.example"
+# Repo-Root (portabel)
+$repoRoot = $null
+try {
+    $repoRoot = (git rev-parse --show-toplevel 2>$null)
+} catch { }
+if ([string]::IsNullOrWhiteSpace($repoRoot)) {
+    $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+}
+
+$TOKEN_FILE = Join-Path $repoRoot ".secrets\github_token"
+$EXAMPLE_FILE = Join-Path $repoRoot ".secrets\github_token.example"
 
 Write-Host "`n🔐 GitHub Token Manager" -ForegroundColor Cyan
 Write-Host "=" * 50
@@ -39,43 +47,85 @@ if (-not (Test-Path $TOKEN_FILE)) {
 }
 
 # 2. Lese Token
-$token = Get-Content $TOKEN_FILE -Raw -ErrorAction Stop
-if ($token -match "github_pat_") {
-    Write-Host "✅ Token geladen (github_pat_...)" -ForegroundColor Green
-} else {
-    Write-Host "❌ Token-Format ungültig! Muss mit 'github_pat_' starten" -ForegroundColor Red
+$token = (Get-Content $TOKEN_FILE -Raw -ErrorAction Stop).Trim()
+if ([string]::IsNullOrWhiteSpace($token)) {
+    Write-Host "❌ Token-Datei ist leer: $TOKEN_FILE" -ForegroundColor Red
     exit 1
 }
 
+# Token-Typen:
+# - Fine-grained PAT: beginnt typischerweise mit 'github_pat_'
+# - Classic PAT: beginnt typischerweise mit 'ghp_'
+if ($token -like 'github_pat_*') {
+    Write-Host "✅ Token geladen (Fine-grained PAT erkannt)" -ForegroundColor Green
+} elseif ($token -like 'ghp_*') {
+    Write-Host "✅ Token geladen (Classic PAT erkannt)" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  Token geladen (unbekanntes Prefix)." -ForegroundColor Yellow
+    Write-Host "   Falls Push fehlschlägt: Prüfe, ob der Token gültig ist und Repo-Permissions hat (Fine-grained: Contents=Read+Write)." -ForegroundColor Gray
+}
+
 # 3. Git Konfiguration
-$user = "mivolkma"
-$repo = "MCP-Chrome_VW_eCom"
+$originUrl = $null
+try {
+    $originUrl = (git remote get-url origin 2>$null)
+} catch { }
+
+$repoOwner = "<GITHUB_USERNAME>"
+$repoName = "<REPO_NAME>"
+if (-not [string]::IsNullOrWhiteSpace($originUrl)) {
+    # Unterstützt https://github.com/owner/repo(.git) und git@github.com:owner/repo(.git)
+    if ($originUrl -match "github\.com[:/](?<owner>[^/]+)/(?<repo>[^/]+?)(?:\.git)?$") {
+        $repoOwner = $Matches.owner
+        $repoName = $Matches.repo
+    }
+}
+
+$user = Read-Host "GitHub Username (für Credential Manager)" 
+if ([string]::IsNullOrWhiteSpace($user)) {
+    $user = $repoOwner
+}
+
+$repo = "$repoOwner/$repoName"
 
 Write-Host "`n⚙️  Konfiguriere Git Remote..." -ForegroundColor Cyan
 
-cd $WORKSPACE
+cd $repoRoot
 
-# Remote URL setzen
-$remoteUrl = "https://$($user):$($token)@github.com/$($user)/$($repo).git"
-git remote set-url origin $remoteUrl -ErrorAction SilentlyContinue
+# Remote URL ohne Token erzwingen (verhindert Token-Leaks in .git/config)
+$safeRemoteUrl = "https://github.com/$($repoOwner)/$($repoName).git"
+git remote set-url origin $safeRemoteUrl -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -ne 0) {
-    git remote add origin $remoteUrl
+    git remote add origin $safeRemoteUrl
 }
 
 # Verifiziere
 $current = git remote get-url origin
-if ($current -like "*github.com*") {
+if ($current -eq $safeRemoteUrl -or $current -like "https://github.com/*") {
     Write-Host "✅ Remote konfiguriert: $repo" -ForegroundColor Green
 } else {
     Write-Host "❌ Remote-Konfiguration fehlgeschlagen!" -ForegroundColor Red
     exit 1
 }
 
-# 4. Git Config Defaults
-Write-Host "`n⚙️  Setze Git-Konfiguration..." -ForegroundColor Cyan
-git config user.name "mivolkma" -ErrorAction SilentlyContinue
-git config user.email "mivolkma@github.com" -ErrorAction SilentlyContinue
-Write-Host "✅ Git Config aktualisiert" -ForegroundColor Green
+# 4. Credentials sicher im OS-Store ablegen (Git Credential Manager)
+Write-Host "`n🔐 Speichere GitHub Credentials im Credential Manager..." -ForegroundColor Cyan
+if (Get-Command git-credential-manager-core -ErrorAction SilentlyContinue) {
+    # Input-Format: key=value, Leerzeile am Ende
+    $payload = @(
+        "protocol=https",
+        "host=github.com",
+        "username=$user",
+        "password=$token",
+        ""
+    ) -join "`n"
+
+    $payload | git-credential-manager-core store | Out-Null
+    Write-Host "✅ Credentials gespeichert (Remote bleibt ohne Token)" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  git-credential-manager-core nicht gefunden." -ForegroundColor Yellow
+    Write-Host "   Empfehlung: Git for Windows inkl. Credential Manager installieren oder beim ersten 'git push' den Token einmalig eingeben." -ForegroundColor Gray
+}
 
 # 5. Status
 Write-Host "`n📊 Status:" -ForegroundColor Cyan
@@ -94,17 +144,23 @@ if ($response -eq "j" -or $response -eq "J") {
         Write-Host "`n✅ Push erfolgreich!" -ForegroundColor Green
     } else {
         Write-Host "`n❌ Push fehlgeschlagen!" -ForegroundColor Red
+        Write-Host "   Häufige Ursachen:" -ForegroundColor Yellow
+        Write-Host "   • Fine-grained Token: Repository access falsch oder Permission fehlt (Contents: Read and write)." -ForegroundColor Gray
+        Write-Host "   • Workflows: Push/Änderung von .github/workflows/*.yml erfordert extra Rechte (Classic: scope 'workflow' / Fine-grained: Actions=Read+Write)." -ForegroundColor Gray
+        Write-Host "   • Branch protection / Required reviews verhindern Push." -ForegroundColor Gray
+        Write-Host "   • Falscher GitHub Username im Credential Manager (ggf. Credentials löschen und neu setzen)." -ForegroundColor Gray
         exit 1
     }
 } else {
     Write-Host "`n✅ Skipped - Du kannst später manuell pushen:" -ForegroundColor Yellow
-    Write-Host "   cd $WORKSPACE && git push origin master" -ForegroundColor White
+    Write-Host "   cd $repoRoot && git push origin master" -ForegroundColor White
 }
 
 Write-Host "`n" -ForegroundColor Cyan
 Write-Host "🔒 Sicherheits-Tipps:" -ForegroundColor Yellow
 Write-Host "   • Token wird NICHT in Git gespeichert" -ForegroundColor Gray
 Write-Host "   • .secrets/github_token wird ignoriert" -ForegroundColor Gray
+Write-Host "   • Remote-URL bleibt ohne Token (kein Leak in .git/config)" -ForegroundColor Gray
 Write-Host "   • Token regelmäßig regenerieren" -ForegroundColor Gray
 Write-Host "   • Alte Tokens auf GitHub löschen" -ForegroundColor Gray
 Write-Host ""
