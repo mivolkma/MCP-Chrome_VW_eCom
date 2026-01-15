@@ -1,7 +1,7 @@
 # 🎓 Training & Dokumentation - Zentrale Navigation
 
 **Version:** 2.0  
-**Status:** ✅ Production-Ready  
+**Status:** 🧪 Proof of Work (PoW)  
 **Zuletzt aktualisiert:** 13. Januar 2026
 
 Alle Dokumentationen, Guides und Trainingsmaterialien für das VW BTO API Analysis Projekt.

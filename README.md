@@ -2,10 +2,22 @@
 
 **Version:** 3.0  
 **Zuletzt aktualisiert:** 13. Januar 2026  
-**Status:** ✅ Production-Ready  
+**Status:** 🧪 Proof of Work (PoW)  
 **Struktur:** ✅ Optimiert (Redundanzen entfernt)
 
 Zentrale Arbeitsumgebung für automatisierte Browser-Tests, API-Analysen und Dokumentation mit GitHub Copilot und MCP Chrome DevTools.
+
+⚠️ **Hinweis zum Reifegrad:** Dieses Repo zeigt die Arbeitsweise (Runner + Evidence-Pipeline) als **Proof of Work**. Inhalte/Reports/Findings sind nicht automatisch ein „aktuelles, belastbares Ergebnis“ und müssen je Run/Umgebung verifiziert werden.
+
+**Wofür ist dieses Repo praktisch gedacht?**
+- **Journey-/Smoke-Tests ausführbar machen** (Playwright-basiert, charter-/prompt-getrieben)
+- **Evidence/Artefakte automatisch erzeugen** (z.B. Network-/API-Spuren, Checkpoints, Findings, Screenshots, Reports)
+- **Reproduzierbarkeit & Teilen ermöglichen**, ohne dass lokale Runs oder Secrets im Repo landen (alles Sensitive bleibt lokal/ignored)
+- **Guardrails gegen Leaks** (z.B. Secret-Scanning via GitHub Actions / Gitleaks)
+
+Kurz: Statt manuell in DevTools zu suchen, bekommst du pro Lauf ein konsistentes Evidence-Paket, das Debugging/Regression erleichtert.
+
+**Übertragbarkeit:** Die gleiche Arbeitsweise lässt sich 1:1 auf andere Journeys und Testartefakte anwenden (z.B. andere Checkout-Varianten, DUC/Leasing-Flows, reine API-Checks, UI-Regressionen, Performance-/Fehler-Sammlungen) – du tauschst im Wesentlichen nur Charter/Prompts und die gewünschten Evidence-Outputs.
 
 ---
 
