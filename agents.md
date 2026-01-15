@@ -1,6 +1,6 @@
 # 🤖 AGENTS - Arbeitsanweisungen & Memory
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Zuletzt aktualisiert:** 15. Januar 2026  
 **Status:** ✅ Production-Ready
 
@@ -221,7 +221,9 @@ ls .secrets/credentials.json
 ✓ Ergebnisse in results/YYYY-MM-DD_HH-MM-SS/ speichern
 ✓ Credentials IMMER aus .secrets/ laden
 ✓ Sensitive Daten im Memory halten, NICHT in Dateien
-✓ Bei Änderungen an Anleitungen/Dokumentation: Versionierung mitpflegen (Header/Footer: `Version`, `Datum`/`Zuletzt aktualisiert` + ggf. Versionsverlauf/Changelog)
+✓ Bei Änderungen an Anleitungen/Dokumentation: Versionierung mitpflegen (`Version` als MAJOR.MINOR + `Zuletzt aktualisiert`)
+✓ MAJOR erhöhen nur bei großen/strukturbrechenden Änderungen (Reorg, Pfade/Struktur ändern)
+✓ MINOR erhöhen bei inhaltlichen Updates/Erweiterungen oder Format-/Regel-Änderungen (z.B. neue Checklisten)
 ✓ Bei Fragen: Siehe QUICK-REFERENCE.md
 ```
 
@@ -451,7 +453,7 @@ EFFIZIENT ARBEITEN = Weniger Dateien, bessere Struktur, keine Duplikate
 ```
 1. Sofort Credentials zurücksetzen (mit Admin)
 2. Prompt-Datei löschen/leeren
-3. git log checken ob schon gecömmt
+3. git log checken ob schon committet
 4. Falls ja: git reset --hard HEAD~1
 5. Neue Credentials in .secrets/ laden
 ```
@@ -460,7 +462,7 @@ EFFIZIENT ARBEITEN = Weniger Dateien, bessere Struktur, keine Duplikate
 ```
 1. git reset HEAD results/  ← Aus staging area entfernen
 2. git status überprüfen
-3. Falls schon gecömmt: git reset --hard HEAD~1
+3. Falls schon committet: git reset --hard HEAD~1
 4. .gitignore checken ob results/ korrekt gelistet ist
 ```
 
@@ -498,6 +500,7 @@ EFFIZIENT ARBEITEN = Weniger Dateien, bessere Struktur, keine Duplikate
 ---
 
 **VERSIONSVERLAUF:**
+- v1.3 (15.01.2026): Versionierungssystem (MAJOR.MINOR) als Regel ergänzt
 - v1.2 (15.01.2026): Regel ergänzt: Bei Doku-Änderungen immer Version/Datum/Changelog mitpflegen (inkl. Vor-dem-Commit-Check)
 - v1.1 (13.01.2026): Fehler 5 hinzugefügt - Warnung vor Dokumentations-Duplikaten, Efficiency-Checkliste erweitert
 - v1.0 (13.01.2026): Erste Version mit 5 kritischen Sicherheitsregeln, Phishing-Schutz

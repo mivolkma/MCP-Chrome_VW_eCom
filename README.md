@@ -1,7 +1,7 @@
 # 🏢 AI_WorkDir - VW BTO API Analysis Projekt
 
-**Version:** 3.0  
-**Zuletzt aktualisiert:** 13. Januar 2026  
+**Version:** 3.1  
+**Zuletzt aktualisiert:** 15. Januar 2026  
 **Status:** 🧪 Proof of Work (PoW)  
 **Struktur:** ✅ Optimiert (Redundanzen entfernt)
 
@@ -125,6 +125,14 @@ AI_WorkDir/
 
 ---
 
+## 🧾 Versionierung (MAJOR.MINOR)
+
+- **MAJOR** nur erhöhen bei großen/strukturbrechenden Änderungen (Reorg, Pfade/Struktur ändern).
+- **MINOR** erhöhen bei inhaltlichen Updates/Erweiterungen oder Regel-/Format-Änderungen.
+- Für reine Tippfehler/Wording gilt ebenfalls **MINOR** (weil wir hier ohne Patch-Level versionieren).
+
+---
+
 ## 🚨 **WICHTIGSTE DATEIEN**
 
 | Datei | Zweck | Typ |
@@ -164,6 +172,10 @@ git status
 ---
 
 ## 📊 **Was ist neu in dieser Version?**
+
+**v3.1 (15. Januar 2026):**
+- ✅ Wording vereinheitlicht ("committet" statt Umgangssprache)
+- ✅ Versionierungsregeln (MAJOR.MINOR) präzisiert
 
 **v3.0 (13. Januar 2026):**
 - ✅ Root-Struktur optimiert (weniger Dateien, mehr Klarheit)
@@ -317,13 +329,11 @@ Heute:          Morgen:              Später:
 
 ## ✅ Checkliste - Vor Commits
 
-## ✅ Checkliste - Vor Commits
-
 - [ ] `git status` zeigt "working tree clean"
 - [ ] KEINE `results/` Dateien in staging area
 - [ ] KEINE `.secrets/credentials.json` geändert
 - [ ] KEINE Credentials/API-Keys in Code
-- [ ] Nur `prompts/`, `docs/`, `trainings/` gecömmt
+- [ ] Nur `prompts/`, `docs/`, `trainings/` committet
 - [ ] `git push` abgesichert
 
 ---
@@ -354,6 +364,6 @@ Heute:          Morgen:              Später:
 
 ---
 
-**Version:** 2.0 (Reorganisiert)  
-**Datum:** 13. Januar 2026  
+**Version:** 3.1  
+**Zuletzt aktualisiert:** 15. Januar 2026  
 **Erstellt für:** VW BTO API Analyse & Automation
