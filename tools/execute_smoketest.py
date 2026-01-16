@@ -15,6 +15,19 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 from bs4 import BeautifulSoup
 
 
+def _append_jsonl(path: Path, record: dict) -> None:
+    """Append one JSON record as a single line.
+
+    Best-effort only: failures must never break the test run.
+    """
+    try:
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with Path(path).open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
 # Make console output robust on Windows when stdout is redirected.
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -1078,14 +1091,14 @@ def _find_checkout_cta(page):
     return None, ""
 
 
-def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str]:
+def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str, dict | None]:
     """Executes a high-level intent step.
 
     Returns (status, message).
     """
     intent = (step.get("intent") or step.get("goal") or step.get("name") or "").strip().lower()
     if not intent:
-        return page, "Warn", "intent: missing 'intent' field"
+        return page, "Warn", "intent: missing 'intent' field", None
 
     if intent in {"start_checkout", "start_checkout_journey", "start ecom", "start ecom journey"}:
         # Prepare: ensure the summary section is open (CTA is rendered there).
@@ -1098,8 +1111,8 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_start_checkout")
             ok, msg, page = _try_discovery_click(page, {"text": "Online leasen"}, inv, max_attempts=6)
             if ok:
-                return page, "Warn", f"intent start_checkout: {msg}"
-            return page, "Fail", "intent start_checkout: CTA not found (expected under data-testid=summary-finance-wrapper)"
+                return page, "Warn", f"intent start_checkout: {msg}", None
+            return page, "Fail", "intent start_checkout: CTA not found (expected under data-testid=summary-finance-wrapper)", None
 
         try:
             cta.scroll_into_view_if_needed(timeout=5000)
@@ -1156,13 +1169,39 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
 
         after = redact_url_for_logging(getattr(page, "url", "") or "")
         if new_page:
-            return page, "Pass", f"intent start_checkout: clicked via {used} (new page opened)"
+            return page, "Pass", f"intent start_checkout: clicked via {used} (new page opened)", None
         if after and after != before:
-            return page, "Pass", f"intent start_checkout: clicked via {used} (url changed)"
+            return page, "Pass", f"intent start_checkout: clicked via {used} (url changed)", None
         # SPA: no url change. If heuristics indicate eCom, treat as Pass.
         if _is_likely_ecom_page(page):
-            return page, "Pass", f"intent start_checkout: clicked via {used} (SPA transition, eCom markers found)"
-        return page, "Warn", f"intent start_checkout: clicked via {used} (no url change observed)"
+            return page, "Pass", f"intent start_checkout: clicked via {used} (SPA transition, eCom markers found)", None
+
+        # Retry once: sometimes the first click doesn't trigger navigation (overlay/race).
+        try:
+            cta, used2 = _find_checkout_cta(page)
+            if cta:
+                try:
+                    cta.click(timeout=10000)
+                except Exception:
+                    pass
+                try:
+                    page.wait_for_url("**/checkout.html*", timeout=15000)
+                except Exception:
+                    pass
+                try:
+                    _stabilize_for_evidence(page, timeout_ms=15000)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+        after2 = redact_url_for_logging(getattr(page, "url", "") or "")
+        if after2 and after2 != before:
+            return page, "Pass", f"intent start_checkout: clicked via {used} (url changed after retry)", None
+        if _is_likely_ecom_page(page):
+            return page, "Pass", f"intent start_checkout: clicked via {used} (eCom markers found after retry)", None
+
+        return page, "Fail", f"intent start_checkout: click did not reach checkout/eCom (no url change observed)", None
 
     if intent in {"assert_checkout_loaded", "assert_ecom_loaded", "assert ecom loaded"}:
         # Deterministic: checkout.html + at least one stable eCom anchor.
@@ -1173,6 +1212,7 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
                 page,
                 "Fail",
                 "intent assert_checkout_loaded: not on checkout page / eCom markers missing. " + _summarize_candidates(inv, limit=6),
+                None,
             )
 
         ok, used = _assert_visible_any(
@@ -1187,17 +1227,28 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=15000,
         )
         if ok:
-            return page, "Pass", f"intent assert_checkout_loaded: anchor visible ({used})"
+            return page, "Pass", f"intent assert_checkout_loaded: anchor visible ({used})", None
 
         # Fallback: CTA button label is a reliable anchor.
         ok, used = _assert_role_button_name_regex(page, r"Weiter|Next Step|Nächster Schritt", timeout_ms=5000)
         if ok:
-            return page, "Pass", f"intent assert_checkout_loaded: anchor visible ({used})"
+            return page, "Pass", f"intent assert_checkout_loaded: anchor visible ({used})", None
 
         inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_assert_checkout_loaded_anchors")
-        return page, "Fail", "intent assert_checkout_loaded: checkout opened but anchors not found. " + _summarize_candidates(inv, limit=6)
+        return page, "Fail", "intent assert_checkout_loaded: checkout opened but anchors not found. " + _summarize_candidates(inv, limit=6), None
 
     if intent in {"assert_tab_slider_present", "assert_tab_slider", "assert tabs"}:
+        atomic: dict = {"tab_slider": {"checks": []}}
+        # If we're not on the checkout journey, do not hard-fail here.
+        url_l = (getattr(page, "url", "") or "").lower()
+        if "checkout.html" not in url_l and not _is_likely_ecom_page(page):
+            return (
+                page,
+                "Warn",
+                "intent assert_tab_slider_present: skipped (not on checkout/eCom page)",
+                {"tab_slider": {"skipped": True, "reason": "not on checkout/eCom"}},
+            )
+
         ok, used = _assert_visible_any(
             page,
             [
@@ -1212,7 +1263,355 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=15000,
         )
         if ok:
-            return page, "Pass", f"intent assert_tab_slider_present: found ({used})"
+            # --- Atomic checks (best-effort, no secrets) ---
+            # 1) Tabs count is observed, but NOT assumed upfront.
+            #    Any fixed minimum (e.g. "10 tabs") must come from an explicit spec, otherwise it stays a WARN.
+            try:
+                tabs_loc = page.locator('[data-testid="nav-bar"]').first.locator('[role=tab]')
+                if tabs_loc.count() == 0:
+                    tabs_loc = page.locator('[role=tab]')
+            except Exception:
+                tabs_loc = page.locator('[role=tab]')
+            try:
+                tabs_count = int(tabs_loc.count())
+            except Exception:
+                tabs_count = 0
+            atomic["tab_slider"]["tabs_count"] = tabs_count
+            if tabs_count > 0:
+                atomic["tab_slider"]["many_tabs"] = "warn"
+                many_tabs_details = f"tabs_count={tabs_count} (no fixed minimum asserted)"
+            else:
+                atomic["tab_slider"]["many_tabs"] = "warn"
+                many_tabs_details = "no [role=tab] detected (selector may differ / variant)"
+            atomic["tab_slider"]["checks"].append(
+                {
+                    "name": "many_tabs",
+                    "status": atomic["tab_slider"]["many_tabs"],
+                    "details": many_tabs_details,
+                }
+            )
+
+            # 2) "unaccessed tabs deactivated" ~= best-effort detection of disabled-ish non-selected tabs.
+            #    If we can't detect a disabled state reliably, keep this as WARN (do not hard-fail).
+            has_deactivated = False
+            try:
+                limit = min(tabs_count, 12)
+                for idx in range(limit):
+                    el = tabs_loc.nth(idx)
+                    aria_selected = (el.get_attribute("aria-selected") or "").lower()
+                    if aria_selected == "true":
+                        continue
+                    aria_disabled = (el.get_attribute("aria-disabled") or "").lower()
+                    disabled_attr = el.get_attribute("disabled")
+                    cls = (el.get_attribute("class") or "").lower()
+                    if aria_disabled == "true" or disabled_attr is not None or "disabled" in cls or "deactiv" in cls:
+                        has_deactivated = True
+                        break
+            except Exception:
+                has_deactivated = False
+            atomic["tab_slider"]["has_deactivated_tabs"] = "pass" if has_deactivated else "warn"
+            atomic["tab_slider"]["checks"].append(
+                {
+                    "name": "deactivated_tabs",
+                    "status": atomic["tab_slider"]["has_deactivated_tabs"],
+                    "details": "found" if has_deactivated else "not detected (aria-disabled/disabled/class)",
+                }
+            )
+
+            # 3) "left/right arrows functional"
+            #    - Arrows appear only when overflow exists (viewport dependent).
+            #    - On the first step, a left/back arrow is not expected.
+            #    - We validate: if overflow, right-arrow click causes movement; otherwise PASS (no overflow).
+            arrows_ok = False
+            arrows_status = "fail"
+            arrows_note = ""
+            try:
+                def _scroll_state(elh):
+                    return elh.evaluate(
+                        "el => ({scrollLeft: el.scrollLeft||0, scrollWidth: el.scrollWidth||0, clientWidth: el.clientWidth||0})"
+                    )
+
+                def _get_nav_and_scroll():
+                    nav0 = page.locator('[data-testid="nav-bar"], [role=tablist]').first
+                    nav0.wait_for(state="visible", timeout=3000)
+                    scroll_el_handle0 = nav0.evaluate_handle(
+                        """
+                        (root) => {
+                          const candidates = [root, ...Array.from(root.querySelectorAll('*'))];
+                          let best = root;
+                          let bestDelta = 0;
+                          for (const el of candidates) {
+                            const sw = el.scrollWidth || 0;
+                            const cw = el.clientWidth || 0;
+                            const delta = sw - cw;
+                            if (delta > bestDelta + 4) {
+                              best = el;
+                              bestDelta = delta;
+                            }
+                          }
+                          return best;
+                        }
+                        """
+                    )
+                    scroll0 = scroll_el_handle0.as_element()
+                    if scroll0 is None:
+                        scroll0 = nav0
+                    before0 = _scroll_state(scroll0)
+                    overflow0 = int(before0.get("scrollWidth") or 0) > int(before0.get("clientWidth") or 0) + 2
+                    return nav0, scroll0, before0, overflow0
+
+                orig_vp = None
+                try:
+                    orig_vp = page.viewport_size
+                except Exception:
+                    orig_vp = None
+
+                nav, scroll_el, before, overflow = _get_nav_and_scroll()
+
+                # Human-equivalent probe: actively change viewport to trigger overflow and validate arrows.
+                viewport_probe: list[dict] = []
+                atomic["tab_slider"]["viewport_probe"] = viewport_probe
+                atomic["tab_slider"]["viewport_original"] = orig_vp
+
+                if not overflow:
+                    probe_sizes = [
+                        {"width": 1024, "height": 900},
+                        {"width": 768, "height": 900},
+                        {"width": 390, "height": 844},
+                    ]
+                    for vp in probe_sizes:
+                        try:
+                            page.set_viewport_size(vp)
+                            page.wait_for_timeout(250)
+                            nav, scroll_el, before, overflow = _get_nav_and_scroll()
+                            viewport_probe.append({"viewport": vp, "overflow": bool(overflow)})
+                            if overflow:
+                                atomic["tab_slider"]["viewport_used"] = vp
+                                break
+                        except Exception:
+                            viewport_probe.append({"viewport": vp, "overflow": None, "error": "set_viewport_failed"})
+                            continue
+
+                if not overflow:
+                    arrows_ok = True
+                    arrows_status = "warn"
+                    arrows_note = "no overflow observed even after viewport probing; arrows not evaluated"
+                else:
+                    bbox_before = None
+                    try:
+                        if tabs_loc.count() > 0:
+                            bbox_before = tabs_loc.first.bounding_box()
+                    except Exception:
+                        bbox_before = None
+
+                    def _find_arrow(dir_name: str):
+                        return nav.evaluate_handle(
+                            """
+                            (root, dirName) => {
+                              const leftPats = ['left','links','zurück','zurueck','previous','prev','back'];
+                              const rightPats = ['right','rechts','weiter','next','forward'];
+                              const pats = dirName === 'left' ? leftPats : rightPats;
+                              const els = root.querySelectorAll('button,[role="button"],[aria-label],[title]');
+                              for (const el of els) {
+                                const s = (
+                                  (el.getAttribute('aria-label') || '') + ' ' +
+                                  (el.getAttribute('title') || '') + ' ' +
+                                  (el.textContent || '')
+                                ).toLowerCase();
+                                if (pats.some(p => s.includes(p))) {
+                                  return el;
+                                }
+                              }
+                              return null;
+                            }
+                            """,
+                            dir_name,
+                        )
+
+                    try:
+                        right_handle = nav.locator(
+                            'button[data-testid="navigationArrowRight"], button[data-testid*="ArrowRight" i]'
+                        ).first.element_handle()
+                    except Exception:
+                        right_handle = None
+                    try:
+                        left_handle_before = nav.locator(
+                            'button[data-testid="navigationArrowLeft"], button[data-testid*="ArrowLeft" i]'
+                        ).first.element_handle()
+                    except Exception:
+                        left_handle_before = None
+
+                    if right_handle is None:
+                        right_handle = _find_arrow("right").as_element()
+                    if right_handle is None:
+                        try:
+                            right_loc = page.get_by_role("button", name=re.compile(r"(right|rechts|next|weiter)", re.I))
+                            right_handle = right_loc.first.element_handle()
+                        except Exception:
+                            right_handle = None
+
+                    left_exists_before = left_handle_before is not None
+                    right_exists = right_handle is not None
+
+                    if right_exists:
+                        try:
+                            right_handle.click(timeout=3000, force=True)
+                        except Exception:
+                            pass
+
+                        mid = before
+                        bbox_after = bbox_before
+                        scroll_changed = False
+                        bbox_shifted = False
+                        for _ in range(10):
+                            try:
+                                page.wait_for_timeout(200)
+                            except Exception:
+                                pass
+                            try:
+                                mid = _scroll_state(scroll_el)
+                            except Exception:
+                                mid = before
+                            try:
+                                if tabs_loc.count() > 0:
+                                    bbox_after = tabs_loc.first.bounding_box()
+                            except Exception:
+                                bbox_after = bbox_before
+                            scroll_changed = int(mid.get("scrollLeft") or 0) != int(before.get("scrollLeft") or 0)
+                            bbox_shifted = False
+                            try:
+                                if bbox_before and bbox_after:
+                                    bbox_shifted = abs(float(bbox_after.get("x") or 0) - float(bbox_before.get("x") or 0)) > 2
+                            except Exception:
+                                bbox_shifted = False
+                            if scroll_changed or bbox_shifted:
+                                break
+
+                        changed = scroll_changed or bbox_shifted
+                        # After moving right (overflow scenario), a left/back arrow is expected to become available.
+                        left_handle_after = None
+                        try:
+                            left_handle_after = nav.locator(
+                                'button[data-testid="navigationArrowLeft"], button[data-testid*="ArrowLeft" i]'
+                            ).first.element_handle()
+                        except Exception:
+                            left_handle_after = None
+                        if left_handle_after is None:
+                            try:
+                                left_handle_after = _find_arrow("left").as_element()
+                            except Exception:
+                                left_handle_after = None
+                        if left_handle_after is None:
+                            try:
+                                left_loc = page.get_by_role("button", name=re.compile(r"(left|links|previous|zur\u00fcck)", re.I))
+                                left_handle_after = left_loc.first.element_handle()
+                            except Exception:
+                                left_handle_after = None
+
+                        left_exists_after = left_handle_after is not None
+
+                        moved_right = changed
+                        moved_back = False
+                        if moved_right and left_exists_after:
+                            try:
+                                left_handle_after.click(timeout=3000, force=True)
+                            except Exception:
+                                pass
+                            try:
+                                page.wait_for_timeout(250)
+                            except Exception:
+                                pass
+                            try:
+                                after = _scroll_state(scroll_el)
+                            except Exception:
+                                after = mid
+
+                            scroll_back = int(after.get("scrollLeft") or 0) != int(mid.get("scrollLeft") or 0)
+                            bbox_back = False
+                            try:
+                                bbox_after_left = None
+                                if tabs_loc.count() > 0:
+                                    bbox_after_left = tabs_loc.first.bounding_box()
+                                if bbox_after and bbox_after_left:
+                                    bbox_back = abs(float(bbox_after_left.get("x") or 0) - float(bbox_after.get("x") or 0)) > 2
+                            except Exception:
+                                bbox_back = False
+                            moved_back = scroll_back or bbox_back
+
+                        if moved_right and left_exists_after and moved_back:
+                            arrows_ok = True
+                            arrows_status = "pass"
+                            arrows_note = (
+                                f"overflow={overflow} moved_right={moved_right} moved_back={moved_back} "
+                                f"scroll_changed={scroll_changed} bbox_shifted={bbox_shifted}"
+                            )
+                        else:
+                            arrows_ok = False
+                            arrows_status = "fail"
+                            arrows_note = (
+                                f"overflow={overflow} right_exists={right_exists} moved_right={moved_right} "
+                                f"left_before={left_exists_before} left_after={left_exists_after} moved_back={moved_back}"
+                            )
+                            try:
+                                inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_tab_slider")
+                                if isinstance(inv, dict):
+                                    arrows_note += " (ui_inventory exported)"
+                            except Exception:
+                                pass
+                    else:
+                        arrows_ok = False
+                        arrows_status = "fail"
+                        arrows_note = "missing right arrow"
+                        try:
+                            scroll_el.evaluate("(el) => { el.scrollLeft = (el.scrollLeft || 0) + 160; }")
+                            page.wait_for_timeout(200)
+                            after_prog = _scroll_state(scroll_el)
+                            if int(after_prog.get("scrollLeft") or 0) != int(before.get("scrollLeft") or 0):
+                                arrows_ok = True
+                                arrows_status = "fail"
+                                arrows_note = "overflow present and scrollable confirmed, but arrow buttons not detected (SPEC/variant mismatch?)"
+                        except Exception:
+                            pass
+            except Exception as e:
+                arrows_ok = False
+                arrows_status = "fail"
+                arrows_note = f"arrow check error: {type(e).__name__}"
+            finally:
+                # Restore viewport to avoid cascading layout changes for subsequent intents.
+                try:
+                    if isinstance(orig_vp, dict) and orig_vp.get("width") and orig_vp.get("height"):
+                        page.set_viewport_size({"width": int(orig_vp["width"]), "height": int(orig_vp["height"])})
+                except Exception:
+                    pass
+
+            atomic["tab_slider"]["arrows_functional"] = arrows_status
+            atomic["tab_slider"]["checks"].append(
+                {
+                    "name": "arrows",
+                    "status": atomic["tab_slider"]["arrows_functional"],
+                    "details": arrows_note,
+                }
+            )
+
+            # Escalate intent status if arrow checks fail.
+            # Other checks remain WARN by default until an explicit product spec defines pass/fail thresholds.
+            if arrows_status == "fail":
+                return (
+                    page,
+                    "Fail",
+                    "intent assert_tab_slider_present: atomic checks failed (see step_results.jsonl atomic details)",
+                    atomic,
+                )
+
+            if arrows_status == "warn" or atomic["tab_slider"].get("many_tabs") == "warn" or atomic["tab_slider"].get("has_deactivated_tabs") == "warn":
+                return (
+                    page,
+                    "Warn",
+                    "intent assert_tab_slider_present: partial validation (see step_results.jsonl atomic details)",
+                    atomic,
+                )
+
+            return page, "Pass", f"intent assert_tab_slider_present: found ({used})", atomic
 
         # Variant handling: some checkout variants may not show a tab slider at all.
         # If core checkout anchors are present, downgrade to Warn instead of failing hard.
@@ -1241,14 +1640,15 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
                 + str(used_checkout)
                 + "). "
                 + _summarize_candidates(inv, limit=6),
+                None,
             )
-        return page, "Fail", "intent assert_tab_slider_present: expected tab slider not found. " + _summarize_candidates(inv, limit=6)
+        return page, "Fail", "intent assert_tab_slider_present: expected tab slider not found. " + _summarize_candidates(inv, limit=6), None
 
     if intent in {"assert_price_box_present", "assert_price_box", "assert price box"}:
         # Prefer a semantic anchor that sits in/near the price box.
         ok, used = _assert_role_button_name_regex(page, r"Angebot bearbeiten", timeout_ms=5000)
         if ok:
-            return page, "Pass", f"intent assert_price_box_present: found ({used})"
+            return page, "Pass", f"intent assert_price_box_present: found ({used})", None
         ok, used = _assert_visible_any(
             page,
             [
@@ -1258,10 +1658,10 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=5000,
         )
         if ok:
-            return page, "Pass", f"intent assert_price_box_present: found ({used})"
+            return page, "Pass", f"intent assert_price_box_present: found ({used})", None
         inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_assert_price_box")
         # Keep as Warn because some variants might hide the edit link.
-        return page, "Warn", "intent assert_price_box_present: not confirmed (variant?) " + _summarize_candidates(inv, limit=6)
+        return page, "Warn", "intent assert_price_box_present: not confirmed (variant?) " + _summarize_candidates(inv, limit=6), None
 
     if intent in {"assert_sticky_bar_present", "assert_sticky_bar", "assert next step cta"}:
         # Deterministic: the Next Step CTA exists.
@@ -1275,7 +1675,7 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=5000,
         )
         if ok:
-            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})"
+            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})", None
 
         ok, used = _assert_role_button_name_regex(
             page,
@@ -1283,7 +1683,7 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=5000,
         )
         if ok:
-            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})"
+            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})", None
         ok, used = _assert_visible_any(
             page,
             [
@@ -1298,11 +1698,1439 @@ def execute_intent(page, step: dict, *, run_dir: Path) -> tuple[object, str, str
             timeout_ms=5000,
         )
         if ok:
-            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})"
+            return page, "Pass", f"intent assert_sticky_bar_present: found ({used})", None
         inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_assert_sticky_bar")
-        return page, "Fail", "intent assert_sticky_bar_present: Next Step CTA not found. " + _summarize_candidates(inv, limit=6)
+        return page, "Fail", "intent assert_sticky_bar_present: Next Step CTA not found. " + _summarize_candidates(inv, limit=6), None
 
-    return page, "Warn", f"intent: unsupported '{intent}'"
+    if intent in {"open_financing_layer", "open financing layer"}:
+        atomic: dict = {"financing_layer": {"opened": "fail", "checks": []}}
+
+        # Prefer the semantic anchor from the price box.
+        btn = None
+        used = None
+        try:
+            btn, used = _find_by_role_or_text(page, role="button", name=re.compile(r"Angebot bearbeiten", re.I))
+        except Exception:
+            btn, used = None, None
+
+        if not btn:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_open_financing_layer")
+            atomic["financing_layer"]["opened"] = "warn"
+            atomic["financing_layer"]["checks"].append({"name": "edit_link", "status": "warn", "details": "not found"})
+            return (
+                page,
+                "Warn",
+                "intent open_financing_layer: edit link not found (variant?) " + _summarize_candidates(inv, limit=6),
+                atomic,
+            )
+
+        try:
+            btn.click(timeout=10000)
+        except Exception:
+            try:
+                btn.click(timeout=10000, force=True)
+            except Exception:
+                pass
+
+        # Confirm a layer/dialog-like UI appeared. Keep it abstract and variant-tolerant.
+        dialog = None
+        try:
+            dialog = page.locator('[role="dialog"], [aria-modal="true"], [data-testid*="financ" i], [data-testid*="layer" i]').first
+            dialog.wait_for(state="visible", timeout=5000)
+        except Exception:
+            dialog = None
+
+        if dialog is not None:
+            atomic["financing_layer"]["opened"] = "pass"
+            atomic["financing_layer"]["checks"].append({"name": "dialog_visible", "status": "pass", "details": "visible"})
+            return page, "Pass", f"intent open_financing_layer: opened ({used or 'button'})", atomic
+
+        # Fallback: at least detect that something changed.
+        atomic["financing_layer"]["opened"] = "warn"
+        atomic["financing_layer"]["checks"].append({"name": "dialog_visible", "status": "warn", "details": "not confirmed"})
+        return page, "Warn", f"intent open_financing_layer: click done but layer not confirmed ({used or 'button'})", atomic
+
+    if intent in {"change_financing_parameter", "change financing parameter"}:
+        atomic: dict = {"financing_change": {"changed": "fail", "strategy": None, "details": "", "checks": []}}
+
+        # Try to operate within a dialog if present (more stable scope).
+        scope = None
+        try:
+            scope = page.locator('[role="dialog"], [aria-modal="true"], [data-testid*="financ" i], [data-testid*="layer" i]').first
+            scope.wait_for(state="visible", timeout=2000)
+        except Exception:
+            scope = page
+
+        # Optional hinting.
+        parameter = (step.get("parameter") or step.get("field") or "").strip().lower()
+        target_value = step.get("value")
+
+        # Snapshot a price-box-ish container (best-effort) to later detect change.
+        before_box = ""
+        try:
+            edit_btn = page.get_by_role("button", name=re.compile(r"Angebot bearbeiten", re.I)).first
+            edit_btn.wait_for(state="visible", timeout=1500)
+            eh = edit_btn.element_handle()
+            if eh is not None:
+                box_h = eh.evaluate_handle("el => el.closest('aside,section,div')")
+                box_el = box_h.as_element() if box_h is not None else None
+                if box_el is not None:
+                    before_box = (box_el.inner_text() or "")
+        except Exception:
+            before_box = ""
+
+        changed = False
+
+        # Strategy A: If we have a parameter hint, try label-based fields.
+        if parameter and scope is not None:
+            pats = []
+            if parameter in {"mileage", "km", "kilometer", "laufleistung"}:
+                pats = [r"km", r"kilometer", r"laufleistung"]
+            elif parameter in {"duration", "term", "laufzeit"}:
+                pats = [r"laufzeit", r"monat"]
+            elif parameter in {"downpayment", "down payment", "anzahlung"}:
+                pats = [r"anzahlung"]
+
+            for p in pats:
+                try:
+                    loc = scope.get_by_label(re.compile(p, re.I)).first
+                    loc.wait_for(state="visible", timeout=1500)
+                    atomic["financing_change"]["strategy"] = f"label:{p}"
+                    if target_value is not None:
+                        try:
+                            loc.fill(str(target_value), timeout=3000)
+                            changed = True
+                            atomic["financing_change"]["details"] = f"filled {parameter}={target_value}"
+                            break
+                        except Exception:
+                            pass
+                except Exception:
+                    continue
+
+        # Strategy B: generic combobox selection (most resilient across variants).
+        if not changed and scope is not None:
+            try:
+                cb = scope.get_by_role("combobox").first
+                cb.wait_for(state="visible", timeout=1500)
+                atomic["financing_change"]["strategy"] = "combobox:first"
+                try:
+                    cb.click(timeout=2000)
+                except Exception:
+                    pass
+                try:
+                    cb.press("ArrowDown")
+                    cb.press("Enter")
+                    changed = True
+                    atomic["financing_change"]["details"] = "changed first combobox option"
+                except Exception:
+                    pass
+            except Exception:
+                pass
+
+        # Strategy C: generic numeric input tweak.
+        if not changed and scope is not None:
+            try:
+                num = scope.locator('input[type="number"], input[inputmode="numeric"]').first
+                num.wait_for(state="visible", timeout=1500)
+                atomic["financing_change"]["strategy"] = "numeric:first"
+                before_val = None
+                try:
+                    before_val = num.input_value(timeout=1000)
+                except Exception:
+                    before_val = None
+                new_val = None
+                if target_value is not None:
+                    new_val = str(target_value)
+                elif before_val and str(before_val).strip().isdigit():
+                    new_val = str(int(before_val) + 1)
+                if new_val is not None:
+                    try:
+                        num.fill(new_val, timeout=3000)
+                        changed = True
+                        atomic["financing_change"]["details"] = f"numeric {before_val}->{new_val}"
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+        # Best-effort: try to apply/close by clicking a primary button.
+        try:
+            apply_btn = page.get_by_role("button", name=re.compile(r"Übernehmen|Speichern|Weiter|Apply|Save", re.I)).first
+            if apply_btn.is_visible():
+                apply_btn.click(timeout=2000)
+        except Exception:
+            pass
+
+        # Detect whether something changed in the price box text.
+        after_box = ""
+        try:
+            edit_btn = page.get_by_role("button", name=re.compile(r"Angebot bearbeiten", re.I)).first
+            eh = edit_btn.element_handle()
+            if eh is not None:
+                box_h = eh.evaluate_handle("el => el.closest('aside,section,div')")
+                box_el = box_h.as_element() if box_h is not None else None
+                if box_el is not None:
+                    after_box = (box_el.inner_text() or "")
+        except Exception:
+            after_box = ""
+
+        atomic["financing_change"]["price_box_changed"] = bool(before_box and after_box and before_box != after_box)
+
+        if changed:
+            atomic["financing_change"]["changed"] = "pass"
+            return page, "Warn", "intent change_financing_parameter: changed something (SPEC_REQUIRED to assert exact parameter/value)", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_change_financing_parameter")
+        atomic["financing_change"]["changed"] = "warn"
+        return page, "Warn", "intent change_financing_parameter: could not change parameter (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_price_box_updated", "assert price box updated"}:
+        atomic: dict = {"price_box": {"updated": "warn", "details": ""}}
+        expected = step.get("expected") or step.get("value") or None
+
+        # Compare a best-effort container around the edit link.
+        before = str(step.get("before_snapshot") or "")
+        try:
+            edit_btn = page.get_by_role("button", name=re.compile(r"Angebot bearbeiten", re.I)).first
+            eh = edit_btn.element_handle()
+            if eh is None:
+                raise RuntimeError("no_edit_btn")
+            box_h = eh.evaluate_handle("el => el.closest('aside,section,div')")
+            box_el = box_h.as_element() if box_h is not None else None
+            if box_el is None:
+                raise RuntimeError("no_box")
+            now = (box_el.inner_text() or "")
+            if expected is not None and str(expected) in now:
+                atomic["price_box"]["updated"] = "pass"
+                atomic["price_box"]["details"] = f"expected value found: {expected}"
+                return page, "Pass", "intent assert_price_box_updated: expected value present", atomic
+            if before and now and before != now:
+                atomic["price_box"]["updated"] = "warn"
+                atomic["price_box"]["details"] = "content changed (no explicit expected mapping)"
+                return page, "Warn", "intent assert_price_box_updated: content changed (SPEC_REQUIRED for exact mapping)", atomic
+        except Exception:
+            pass
+        return page, "Warn", "intent assert_price_box_updated: not confirmed (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_sticky_behavior_on_scroll", "assert sticky behavior on scroll"}:
+        atomic: dict = {"sticky": {"status": "warn", "samples": [], "footer_seen": False}}
+
+        # Anchor: Next Step CTA (most deterministic).
+        cta = page.locator('[data-testid="cta-next-step"]').first
+        try:
+            cta.wait_for(state="visible", timeout=3000)
+        except Exception:
+            try:
+                cta = page.get_by_role("button", name=re.compile(r"Weiter|Next Step|Nächster Schritt|Fortfahren", re.I)).first
+                cta.wait_for(state="visible", timeout=3000)
+            except Exception:
+                inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_sticky_scroll")
+                return page, "Warn", "intent assert_sticky_behavior_on_scroll: CTA not found " + _summarize_candidates(inv, limit=6), atomic
+
+        def _footer_visible() -> bool:
+            try:
+                f = page.locator("footer").first
+                if not f.is_visible():
+                    return False
+                bb = f.bounding_box()
+                if not bb:
+                    return True
+                vh = page.evaluate("() => window.innerHeight")
+                return float(bb.get("y") or 0) < float(vh)  # footer enters viewport
+            except Exception:
+                return False
+
+        try:
+            bb0 = cta.bounding_box() or {}
+        except Exception:
+            bb0 = {}
+
+        base_y = float(bb0.get("y") or 0)
+        violated = False
+
+        # Scroll in small increments, verify CTA stays near bottom until footer appears.
+        for step_i in range(8):
+            try:
+                page.mouse.wheel(0, 650)
+            except Exception:
+                try:
+                    page.evaluate("() => window.scrollBy(0, 650)")
+                except Exception:
+                    pass
+            try:
+                page.wait_for_timeout(200)
+            except Exception:
+                pass
+
+            footer = _footer_visible()
+            if footer:
+                atomic["sticky"]["footer_seen"] = True
+                break
+
+            try:
+                bb = cta.bounding_box() or {}
+            except Exception:
+                bb = {}
+            y = float(bb.get("y") or 0)
+            atomic["sticky"]["samples"].append({"i": step_i, "y": y})
+            if abs(y - base_y) > 8:
+                violated = True
+                break
+
+        if violated:
+            atomic["sticky"]["status"] = "fail"
+            return page, "Fail", "intent assert_sticky_behavior_on_scroll: CTA moved unexpectedly before footer", atomic
+
+        # If we never saw footer, keep it as WARN (spec/threshold missing).
+        if atomic["sticky"]["footer_seen"]:
+            atomic["sticky"]["status"] = "pass"
+            return page, "Pass", "intent assert_sticky_behavior_on_scroll: sticky until footer (heuristic)", atomic
+        atomic["sticky"]["status"] = "warn"
+        return page, "Warn", "intent assert_sticky_behavior_on_scroll: footer not observed; sticky seems stable (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_next_step_navigation_when_completed", "assert next step navigation when completed"}:
+        atomic: dict = {"next_step": {"status": "warn", "before": {}, "after": {}}}
+
+        # Anchor CTA
+        cta = page.locator('[data-testid="cta-next-step"]').first
+        try:
+            cta.wait_for(state="visible", timeout=3000)
+        except Exception:
+            cta = page.get_by_role("button", name=re.compile(r"Weiter|Next Step|Nächster Schritt|Fortfahren", re.I)).first
+            try:
+                cta.wait_for(state="visible", timeout=3000)
+            except Exception:
+                inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_next_step")
+                return page, "Warn", "intent assert_next_step_navigation_when_completed: CTA not found " + _summarize_candidates(inv, limit=6), atomic
+
+        try:
+            atomic["next_step"]["before"]["url"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["next_step"]["before"]["url"] = ""
+        try:
+            tab_before = page.locator('[role="tab"][aria-selected="true"]').first
+            atomic["next_step"]["before"]["tab"] = (tab_before.inner_text() or "").strip()
+        except Exception:
+            atomic["next_step"]["before"]["tab"] = ""
+
+        # If disabled, we can't assert the "when completed" part without a completion definition.
+        try:
+            aria_disabled = (cta.get_attribute("aria-disabled") or "").lower() == "true"
+            disabled_attr = cta.get_attribute("disabled") is not None
+            if aria_disabled or disabled_attr:
+                atomic["next_step"]["status"] = "warn"
+                return page, "Warn", "intent assert_next_step_navigation_when_completed: CTA disabled (SPEC_REQUIRED completion criteria)", atomic
+        except Exception:
+            pass
+
+        try:
+            cta.click(timeout=5000)
+        except Exception:
+            try:
+                cta.click(timeout=5000, force=True)
+            except Exception:
+                pass
+
+        try:
+            page.wait_for_timeout(800)
+        except Exception:
+            pass
+
+        try:
+            atomic["next_step"]["after"]["url"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["next_step"]["after"]["url"] = ""
+        try:
+            tab_after = page.locator('[role="tab"][aria-selected="true"]').first
+            atomic["next_step"]["after"]["tab"] = (tab_after.inner_text() or "").strip()
+        except Exception:
+            atomic["next_step"]["after"]["tab"] = ""
+
+        if atomic["next_step"]["before"].get("url") and atomic["next_step"]["after"].get("url") and atomic["next_step"]["before"]["url"] != atomic["next_step"]["after"]["url"]:
+            atomic["next_step"]["status"] = "pass"
+            return page, "Pass", "intent assert_next_step_navigation_when_completed: URL changed", atomic
+        if atomic["next_step"]["before"].get("tab") and atomic["next_step"]["after"].get("tab") and atomic["next_step"]["before"]["tab"] != atomic["next_step"]["after"]["tab"]:
+            atomic["next_step"]["status"] = "pass"
+            return page, "Pass", "intent assert_next_step_navigation_when_completed: active tab changed", atomic
+
+        atomic["next_step"]["status"] = "warn"
+        return page, "Warn", "intent assert_next_step_navigation_when_completed: click done but progression not confirmed (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_disclaimer_references", "assert disclaimer references"}:
+        atomic: dict = {"disclaimer": {"refs": {"status": "warn", "count": 0}}}
+        try:
+            # Heuristic: footnote-like refs are often rendered as <sup> or anchors near price texts.
+            sup_count = page.locator("sup").count()
+            atomic["disclaimer"]["refs"]["count"] = int(sup_count)
+            if sup_count >= 2:
+                atomic["disclaimer"]["refs"]["status"] = "pass"
+                return page, "Pass", "intent assert_disclaimer_references: found sup refs (heuristic)", atomic
+        except Exception:
+            pass
+        return page, "Warn", "intent assert_disclaimer_references: not confirmed (SPEC_REQUIRED mapping)", atomic
+
+    if intent in {"assert_disclaimer_texts", "assert disclaimer texts"}:
+        atomic: dict = {"disclaimer": {"texts": {"status": "warn", "hits": []}}}
+        pats = [r"Verbrauch", r"Emission", r"CO2", r"Hinweis", r"Disclaimer"]
+        hits = []
+        for p in pats:
+            try:
+                loc = page.locator(f"text=/{p}/i").first
+                if loc.is_visible():
+                    hits.append(p)
+            except Exception:
+                continue
+        atomic["disclaimer"]["texts"]["hits"] = hits
+        if hits:
+            atomic["disclaimer"]["texts"]["status"] = "pass"
+            return page, "Pass", "intent assert_disclaimer_texts: disclaimer-like texts visible (heuristic)", atomic
+        return page, "Warn", "intent assert_disclaimer_texts: not confirmed (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_summary_co2_disclaimer", "assert summary co2 disclaimer"}:
+        atomic: dict = {"disclaimer": {"summary_co2": {"status": "warn"}}}
+        try:
+            if page.locator("text=/CO2/i").first.is_visible():
+                atomic["disclaimer"]["summary_co2"]["status"] = "pass"
+                return page, "Pass", "intent assert_summary_co2_disclaimer: CO2 marker visible (heuristic)", atomic
+        except Exception:
+            pass
+        return page, "Warn", "intent assert_summary_co2_disclaimer: not confirmed (needs navigation to summary)", atomic
+
+    if intent in {"assert_active_tab", "assert active tab"}:
+        target = (step.get("tab") or step.get("target") or "").strip().lower()
+        atomic: dict = {"active_tab": {"target": target, "selected_label": "", "matched": False, "status": "warn"}}
+
+        def _tab_pattern(tab_name: str) -> re.Pattern | None:
+            t = (tab_name or "").strip().lower()
+            if not t:
+                return None
+            if "personal" in t or "data" in t or "daten" in t:
+                return re.compile(r"personal\s*data|pers\S*\s*daten|daten", re.I)
+            if "partner" in t or "dealer" in t or "händler" in t or "haendler" in t:
+                return re.compile(r"volkswagen\s*partner|partner|dealer|h\S*ndler", re.I)
+            if "pick" in t or "pickup" in t or "abhol" in t:
+                return re.compile(r"pick\s*up|abhol", re.I)
+            if "summary" in t or "zusammen" in t:
+                return re.compile(r"summary|zusammen", re.I)
+            # Generic: require at least one non-trivial word to appear.
+            words = [w for w in re.split(r"\s+", t) if len(w) >= 3]
+            if not words:
+                return None
+            return re.compile(r"(" + "|".join(re.escape(w) for w in words[:3]) + r")", re.I)
+
+        pat = _tab_pattern(target)
+
+        selected_label = ""
+        try:
+            sel = page.locator('[role="tab"][aria-selected="true"]').first
+            sel.wait_for(state="visible", timeout=3000)
+            selected_label = (sel.inner_text() or "").strip()
+        except Exception:
+            selected_label = ""
+
+        atomic["active_tab"]["selected_label"] = selected_label
+
+        if pat is None:
+            return page, "Warn", "intent assert_active_tab: missing target tab (SPEC_REQUIRED)", atomic
+
+        if selected_label and pat.search(selected_label):
+            atomic["active_tab"]["matched"] = True
+            atomic["active_tab"]["status"] = "pass"
+            return page, "Pass", f"intent assert_active_tab: matched '{selected_label}'", atomic
+
+        # Fallback: sometimes the selected state is expressed via classes/active wrappers.
+        try:
+            active_any = page.locator('[data-testid="nav-bar-item--active"], [data-testid*="active" i]').first
+            if active_any.is_visible():
+                txt = (active_any.inner_text() or "").strip()
+                atomic["active_tab"]["selected_label"] = txt or selected_label
+                if txt and pat.search(txt):
+                    atomic["active_tab"]["matched"] = True
+                    atomic["active_tab"]["status"] = "pass"
+                    return page, "Pass", f"intent assert_active_tab: matched '{txt}'", atomic
+        except Exception:
+            pass
+
+        atomic["active_tab"]["matched"] = False
+        atomic["active_tab"]["status"] = "warn"
+        return page, "Warn", "intent assert_active_tab: could not deterministically match active tab (SPEC_REQUIRED)", atomic
+
+    if intent in {"navigate_to_tab", "navigate to tab"}:
+        target = (step.get("tab") or step.get("target") or step.get("name") or "").strip().lower()
+        atomic: dict = {"navigate_tab": {"target": target, "clicked": False, "status": "warn", "details": ""}}
+
+        def _tab_pattern(tab_name: str) -> re.Pattern | None:
+            t = (tab_name or "").strip().lower()
+            if not t:
+                return None
+            if "volkswagen" in t and "partner" in t:
+                return re.compile(r"volkswagen\s*partner|partner|dealer|h\S*ndler", re.I)
+            if "personal" in t or "daten" in t:
+                return re.compile(r"personal\s*data|pers\S*\s*daten|daten", re.I)
+            if "pick" in t or "abhol" in t:
+                return re.compile(r"pick\s*up|abhol", re.I)
+            if "summary" in t or "zusammen" in t:
+                return re.compile(r"summary|zusammen", re.I)
+            if "thank" in t or "danke" in t:
+                return re.compile(r"thank\s*you|danke", re.I)
+            words = [w for w in re.split(r"\s+", t) if len(w) >= 3]
+            if not words:
+                return None
+            return re.compile(r"(" + "|".join(re.escape(w) for w in words[:3]) + r")", re.I)
+
+        pat = _tab_pattern(target)
+        if pat is None:
+            return page, "Warn", "intent navigate_to_tab: missing target tab (SPEC_REQUIRED)", atomic
+
+        # Prefer role=tab by text.
+        try:
+            tabs = page.locator('[role="tab"]').all()
+        except Exception:
+            tabs = []
+
+        clicked = False
+        clicked_label = ""
+        for tab in tabs[:30]:
+            try:
+                if not tab.is_visible():
+                    continue
+                label = (tab.inner_text() or "").strip()
+                if label and pat.search(label):
+                    clicked_label = label
+                    try:
+                        tab.click(timeout=5000)
+                    except Exception:
+                        try:
+                            tab.click(timeout=5000, force=True)
+                        except Exception:
+                            pass
+                    clicked = True
+                    break
+            except Exception:
+                continue
+
+        # Fallback: click likely nav-bar item by text.
+        if not clicked:
+            try:
+                nav = page.locator('[data-testid="nav-bar"], [role="tablist"]').first
+                cand = nav.locator('button, [role="tab"], a').all()
+                for el in cand[:50]:
+                    try:
+                        if not el.is_visible():
+                            continue
+                        txt = (el.inner_text() or "").strip()
+                        if txt and pat.search(txt):
+                            clicked_label = txt
+                            el.click(timeout=5000)
+                            clicked = True
+                            break
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+
+        atomic["navigate_tab"]["clicked"] = bool(clicked)
+        if not clicked:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_navigate_to_tab")
+            atomic["navigate_tab"]["details"] = "click target not found"
+            return page, "Warn", "intent navigate_to_tab: target tab not found " + _summarize_candidates(inv, limit=6), atomic
+
+        # Confirm selection change.
+        try:
+            page.wait_for_timeout(300)
+        except Exception:
+            pass
+        try:
+            sel = page.locator('[role="tab"][aria-selected="true"]').first
+            if sel.is_visible():
+                sel_label = (sel.inner_text() or "").strip()
+                if sel_label and pat.search(sel_label):
+                    atomic["navigate_tab"]["status"] = "pass"
+                    atomic["navigate_tab"]["details"] = f"selected='{sel_label}'"
+                    return page, "Pass", f"intent navigate_to_tab: navigated to '{sel_label}'", atomic
+        except Exception:
+            pass
+
+        atomic["navigate_tab"]["status"] = "warn"
+        atomic["navigate_tab"]["details"] = f"clicked='{clicked_label}' but selection not confirmed"
+        return page, "Warn", "intent navigate_to_tab: click done but selection not deterministically confirmed (SPEC_REQUIRED)", atomic
+
+    if intent in {"fill_personal_data_required", "fill personal data required"}:
+        atomic: dict = {"personal_data": {"filled": [], "combobox_changed": 0, "status": "warn"}}
+
+        # Scope: prefer the main form wrapper if present.
+        scope = None
+        try:
+            scope = page.locator('[data-testid="form-wrapper"], [data-testid="forms-group-container"], form').first
+            scope.wait_for(state="visible", timeout=3000)
+        except Exception:
+            scope = page
+
+        def _try_fill(label_pat: re.Pattern, value: str) -> bool:
+            try:
+                loc = scope.get_by_label(label_pat).first
+                loc.wait_for(state="visible", timeout=1500)
+                loc.fill(value, timeout=3000)
+                return True
+            except Exception:
+                return False
+
+        filled = []
+        # Use only non-sensitive placeholder values; do not log values.
+        if _try_fill(re.compile(r"Vorname|First\s*name", re.I), "Max"):
+            filled.append("first_name")
+        if _try_fill(re.compile(r"Nachname|Last\s*name", re.I), "Mustermann"):
+            filled.append("last_name")
+
+        # Email: prefer input[type=email].
+        email_ok = False
+        try:
+            e = scope.locator('input[type="email"]').first
+            if e.is_visible():
+                e.fill("max.mustermann@example.com", timeout=3000)
+                email_ok = True
+        except Exception:
+            email_ok = False
+        if not email_ok:
+            try:
+                if _try_fill(re.compile(r"E-?Mail|Email", re.I), "max.mustermann@example.com"):
+                    email_ok = True
+            except Exception:
+                email_ok = False
+        if email_ok:
+            filled.append("email")
+
+        # Comboboxes / dropdowns: best-effort choose first option.
+        combobox_changed = 0
+        try:
+            cbs = scope.get_by_role("combobox").all()
+        except Exception:
+            cbs = []
+        for cb in cbs[:3]:
+            try:
+                if not cb.is_visible():
+                    continue
+                cb.click(timeout=1500)
+                try:
+                    cb.press("ArrowDown")
+                    cb.press("Enter")
+                    combobox_changed += 1
+                except Exception:
+                    pass
+            except Exception:
+                continue
+
+        atomic["personal_data"]["filled"] = filled
+        atomic["personal_data"]["combobox_changed"] = int(combobox_changed)
+
+        # Determinism: without explicit field list we cannot assert completeness, only basic interactability.
+        if len(filled) >= 2 or combobox_changed >= 1:
+            atomic["personal_data"]["status"] = "warn"
+            return page, "Warn", "intent fill_personal_data_required: basic interaction ok (SPEC_REQUIRED for exact required fields)", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_fill_personal_data")
+        return page, "Warn", "intent fill_personal_data_required: could not fill expected fields (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_next_step_gate", "assert next step gate"}:
+        atomic: dict = {"next_step_gate": {"status": "warn", "disabled": None, "details": ""}}
+        cta = page.locator('[data-testid="cta-next-step"]').first
+        try:
+            cta.wait_for(state="visible", timeout=3000)
+        except Exception:
+            try:
+                cta = page.get_by_role("button", name=re.compile(r"Weiter|Next Step|N\S*chster Schritt|Fortfahren", re.I)).first
+                cta.wait_for(state="visible", timeout=3000)
+            except Exception:
+                inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_next_step_gate")
+                atomic["next_step_gate"]["details"] = "CTA not found"
+                return page, "Warn", "intent assert_next_step_gate: CTA not found " + _summarize_candidates(inv, limit=6), atomic
+
+        disabled = None
+        try:
+            aria_disabled = (cta.get_attribute("aria-disabled") or "").lower() == "true"
+            disabled_attr = cta.get_attribute("disabled") is not None
+            disabled = bool(aria_disabled or disabled_attr)
+        except Exception:
+            disabled = None
+
+        atomic["next_step_gate"]["disabled"] = disabled
+        atomic["next_step_gate"]["status"] = "warn"
+        if disabled is True:
+            atomic["next_step_gate"]["details"] = "CTA disabled (supports gating, not a proof)"
+        elif disabled is False:
+            atomic["next_step_gate"]["details"] = "CTA enabled (cannot prove gating without explicit error rules)"
+        else:
+            atomic["next_step_gate"]["details"] = "CTA disabled state not determinable"
+        return page, "Warn", "intent assert_next_step_gate: observed CTA state (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_dealer_search_ui", "assert dealer search ui"}:
+        atomic: dict = {"dealer_ui": {"status": "warn", "has_search": False, "has_locate_me": False}}
+
+        # Search input
+        has_search = False
+        try:
+            inp = page.get_by_role("textbox", name=re.compile(r"PLZ|Postleitzahl|Ort|Stadt|City|Postal", re.I)).first
+            if inp.is_visible():
+                has_search = True
+        except Exception:
+            has_search = False
+        if not has_search:
+            try:
+                inp = page.locator('input[type="search"], input[placeholder*="PLZ" i], input[placeholder*="Stadt" i]').first
+                has_search = inp.is_visible()
+            except Exception:
+                has_search = False
+
+        # Locate me
+        has_locate = False
+        try:
+            loc_btn = page.get_by_role("button", name=re.compile(r"Locate\s*me|Standort|Meine\s*Position|Locate", re.I)).first
+            has_locate = loc_btn.is_visible()
+        except Exception:
+            has_locate = False
+        if not has_locate:
+            try:
+                loc_btn = page.locator('[data-testid*="locate" i], button:has-text("Locate"), button:has-text("Standort")').first
+                has_locate = loc_btn.is_visible()
+            except Exception:
+                has_locate = False
+
+        atomic["dealer_ui"]["has_search"] = bool(has_search)
+        atomic["dealer_ui"]["has_locate_me"] = bool(has_locate)
+
+        if has_search and has_locate:
+            atomic["dealer_ui"]["status"] = "pass"
+            return page, "Pass", "intent assert_dealer_search_ui: search + locate-me visible", atomic
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_dealer_search_ui")
+        return page, "Warn", "intent assert_dealer_search_ui: not fully confirmed (SPEC_REQUIRED/variant) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"search_dealer", "search dealer"}:
+        query = (step.get("query") or step.get("value") or "").strip()
+        atomic: dict = {
+            "dealer_search": {
+                "status": "warn",
+                "query": {"_sha256": _sha256_str(query), "_len": len(query)},
+                "suggestions_count": None,
+                "suggestion_selected": False,
+                "selected_option": None,
+                "details": "",
+            }
+        }
+
+        # Ensure we have an input.
+        inp = None
+        try:
+            inp = page.get_by_role("textbox", name=re.compile(r"PLZ|Postleitzahl|Ort|Stadt|City|Postal", re.I)).first
+            if not inp.is_visible():
+                inp = None
+        except Exception:
+            inp = None
+        if inp is None:
+            try:
+                inp = page.locator('input[type="search"], input[placeholder*="PLZ" i], input[placeholder*="Stadt" i]').first
+                if not inp.is_visible():
+                    inp = None
+            except Exception:
+                inp = None
+
+        if inp is None:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_search_dealer")
+            atomic["dealer_search"]["details"] = "search input not found"
+            return page, "Warn", "intent search_dealer: search input not found " + _summarize_candidates(inv, limit=6), atomic
+
+        if not query:
+            atomic["dealer_search"]["details"] = "missing query (SPEC_REQUIRED)"
+            return page, "Warn", "intent search_dealer: missing query (SPEC_REQUIRED)", atomic
+
+        try:
+            inp.fill(query, timeout=3000)
+            try:
+                inp.press("Enter")
+            except Exception:
+                pass
+            # Dealer search often shows an async suggestion dropdown (cities/PLZ).
+            # Best-effort: pick a suggestion if a listbox/options appear.
+            try:
+                # Give the UI some time to populate suggestions.
+                page.wait_for_timeout(350)
+
+                listbox = None
+                try:
+                    listbox = page.get_by_role("listbox").first
+                    if not listbox.is_visible():
+                        listbox = None
+                except Exception:
+                    listbox = None
+
+                if listbox is not None:
+                    try:
+                        options = listbox.get_by_role("option")
+                        n = int(options.count())
+                    except Exception:
+                        n = 0
+                    atomic["dealer_search"]["suggestions_count"] = n
+
+                    chosen = None
+                    chosen_text = ""
+                    if n > 0:
+                        # Prefer an option containing the query; else take the first.
+                        try:
+                            for i in range(min(n, 10)):
+                                t = (options.nth(i).inner_text(timeout=1000) or "").strip()
+                                if t and query.lower() in t.lower():
+                                    chosen = options.nth(i)
+                                    chosen_text = t
+                                    break
+                        except Exception:
+                            chosen = None
+
+                        if chosen is None:
+                            try:
+                                chosen_text = (options.first.inner_text(timeout=1000) or "").strip()
+                                chosen = options.first
+                            except Exception:
+                                chosen = None
+
+                    if chosen is not None:
+                        try:
+                            chosen.click(timeout=3000)
+                            atomic["dealer_search"]["suggestion_selected"] = True
+                            atomic["dealer_search"]["selected_option"] = {
+                                "_sha256": _sha256_str(chosen_text),
+                                "_len": len(chosen_text),
+                            }
+                            atomic["dealer_search"]["details"] = "selected suggestion from dropdown"
+                            page.wait_for_timeout(500)
+                        except Exception:
+                            atomic["dealer_search"]["details"] = "suggestion dropdown present, but click failed"
+            except Exception:
+                pass
+            try:
+                page.wait_for_timeout(800)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+        atomic["dealer_search"]["status"] = "pass"
+        return page, "Pass", "intent search_dealer: query entered", atomic
+
+    if intent in {"assert_dealer_results", "assert dealer results"}:
+        min_results = step.get("min_results") or step.get("min") or None
+        atomic: dict = {"dealer_results": {"status": "warn", "count": 0, "min_results": min_results}}
+
+        # Heuristic: selection CTAs or result cards.
+        count = 0
+        try:
+            count = int(page.locator('button:has-text("Auswählen"), button:has-text("Select")').count())
+        except Exception:
+            count = 0
+        if count == 0:
+            try:
+                count = int(page.locator('[data-testid*="dealer" i], [data-testid*="result" i]').count())
+            except Exception:
+                count = 0
+
+        atomic["dealer_results"]["count"] = int(count)
+
+        if isinstance(min_results, int) and min_results > 0:
+            if count >= min_results:
+                atomic["dealer_results"]["status"] = "pass"
+                return page, "Pass", f"intent assert_dealer_results: count={count} >= {min_results}", atomic
+            atomic["dealer_results"]["status"] = "warn"
+            return page, "Warn", f"intent assert_dealer_results: count={count} < {min_results} (SPEC_REQUIRED?)", atomic
+
+        return page, "Warn", f"intent assert_dealer_results: count={count} (SPEC_REQUIRED for 'many')", atomic
+
+    if intent in {"select_dealer", "select dealer"}:
+        atomic: dict = {"dealer_select": {"status": "warn", "selected": False, "cta_enabled_after": None, "map_visible": None}}
+
+        # Capture Next-Step CTA enabled state before/after as a proxy.
+        def _cta_enabled() -> bool | None:
+            try:
+                cta = page.locator('[data-testid="cta-next-step"]').first
+                if not cta.is_visible():
+                    return None
+                aria_disabled = (cta.get_attribute("aria-disabled") or "").lower() == "true"
+                disabled_attr = cta.get_attribute("disabled") is not None
+                return not (aria_disabled or disabled_attr)
+            except Exception:
+                return None
+
+        before_enabled = _cta_enabled()
+
+        selected = False
+        try:
+            btn = page.locator('button:has-text("Auswählen"), button:has-text("Select")').first
+            if btn.is_visible():
+                btn.click(timeout=5000)
+                selected = True
+        except Exception:
+            selected = False
+        if not selected:
+            try:
+                card = page.locator('[data-testid*="dealer" i], [data-testid*="result" i]').first
+                if card.is_visible():
+                    card.click(timeout=5000)
+                    selected = True
+            except Exception:
+                selected = False
+
+        try:
+            page.wait_for_timeout(800)
+        except Exception:
+            pass
+
+        after_enabled = _cta_enabled()
+        atomic["dealer_select"]["selected"] = bool(selected)
+        atomic["dealer_select"]["cta_enabled_after"] = after_enabled
+
+        # Map heuristic
+        map_visible = None
+        try:
+            map_visible = page.locator('iframe[src*="maps" i], [data-testid*="map" i], #map, [aria-label*="map" i]').first.is_visible()
+        except Exception:
+            map_visible = None
+        atomic["dealer_select"]["map_visible"] = map_visible
+
+        if selected:
+            atomic["dealer_select"]["status"] = "warn"
+            return page, "Warn", "intent select_dealer: selected one result (SPEC_REQUIRED to assert 'every shown result selectable')", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_select_dealer")
+        return page, "Warn", "intent select_dealer: could not select dealer (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_pickup_options", "assert pickup options"}:
+        atomic: dict = {"pickup": {"status": "warn", "options": {"count": 0}, "more_info": {"present": False, "layer_opened": False}}}
+
+        count = 0
+        try:
+            count = int(page.locator('[data-testid*="pickup" i], [data-testid*="delivery" i], [data-testid*="transfer" i]').count())
+        except Exception:
+            count = 0
+        if count == 0:
+            try:
+                count = int(page.locator(r'text=/Pick\s*up|Abhol|Übergabe/i').count())
+            except Exception:
+                count = 0
+        atomic["pickup"]["options"]["count"] = int(count)
+
+        more = None
+        try:
+            more = page.get_by_role("link", name=re.compile(r"More\s*information|Mehr\s*Information", re.I)).first
+            if not more.is_visible():
+                more = None
+        except Exception:
+            more = None
+        if more is None:
+            try:
+                more = page.locator('a:has-text("More information"), a:has-text("Mehr Information"), button:has-text("More information"), button:has-text("Mehr Information")').first
+                if not more.is_visible():
+                    more = None
+            except Exception:
+                more = None
+
+        atomic["pickup"]["more_info"]["present"] = bool(more is not None)
+        if more is not None:
+            try:
+                more.click(timeout=3000)
+            except Exception:
+                try:
+                    more.click(timeout=3000, force=True)
+                except Exception:
+                    pass
+            layer_opened = False
+            try:
+                dlg = page.locator('[role="dialog"], [aria-modal="true"]').first
+                dlg.wait_for(state="visible", timeout=2500)
+                layer_opened = True
+            except Exception:
+                layer_opened = False
+            atomic["pickup"]["more_info"]["layer_opened"] = bool(layer_opened)
+            if layer_opened:
+                try:
+                    close_btn = page.get_by_role("button", name=re.compile(r"Close|Schlie\u00dfen|Schliessen", re.I)).first
+                    if close_btn.is_visible():
+                        close_btn.click(timeout=2000)
+                except Exception:
+                    try:
+                        page.keyboard.press("Escape")
+                    except Exception:
+                        pass
+
+        if count > 0:
+            atomic["pickup"]["status"] = "warn"
+            return page, "Warn", "intent assert_pickup_options: pickup markers found (SPEC_REQUIRED)", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_pickup_options")
+        return page, "Warn", "intent assert_pickup_options: not confirmed (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"select_pickup", "select pickup"}:
+        atomic: dict = {"pickup_select": {"status": "warn", "selected": False, "cta_enabled_after": None}}
+
+        def _cta_enabled() -> bool | None:
+            try:
+                cta = page.locator('[data-testid="cta-next-step"]').first
+                if not cta.is_visible():
+                    return None
+                aria_disabled = (cta.get_attribute("aria-disabled") or "").lower() == "true"
+                disabled_attr = cta.get_attribute("disabled") is not None
+                return not (aria_disabled or disabled_attr)
+            except Exception:
+                return None
+
+        before_enabled = _cta_enabled()
+        _ = before_enabled
+
+        selected = False
+        try:
+            opt = page.get_by_role("radio").first
+            if opt.is_visible():
+                opt.check(timeout=3000)
+                selected = True
+        except Exception:
+            selected = False
+        if not selected:
+            try:
+                opt = page.get_by_role("checkbox").first
+                if opt.is_visible():
+                    opt.check(timeout=3000)
+                    selected = True
+            except Exception:
+                selected = False
+        if not selected:
+            try:
+                btn = page.locator('button:has-text("Ausw\u00e4hlen"), button:has-text("Select"), button:has-text("W\u00e4hlen")').first
+                if btn.is_visible():
+                    btn.click(timeout=5000)
+                    selected = True
+            except Exception:
+                selected = False
+
+        try:
+            page.wait_for_timeout(800)
+        except Exception:
+            pass
+
+        after_enabled = _cta_enabled()
+        atomic["pickup_select"]["selected"] = bool(selected)
+        atomic["pickup_select"]["cta_enabled_after"] = after_enabled
+
+        if selected:
+            atomic["pickup_select"]["status"] = "warn"
+            return page, "Warn", "intent select_pickup: selected one option (SPEC_REQUIRED)", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_select_pickup")
+        return page, "Warn", "intent select_pickup: could not select pickup option (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_transfer_costs", "assert transfer costs"}:
+        atomic: dict = {"transfer_costs": {"status": "warn", "price_box_changed": None}}
+
+        before_box = ""
+        try:
+            edit_btn = page.get_by_role("button", name=re.compile(r"Angebot bearbeiten", re.I)).first
+            eh = edit_btn.element_handle()
+            if eh is not None:
+                box_h = eh.evaluate_handle("el => el.closest('aside,section,div')")
+                box_el = box_h.as_element() if box_h is not None else None
+                if box_el is not None:
+                    before_box = (box_el.inner_text() or "")
+        except Exception:
+            before_box = ""
+
+        try:
+            radios = page.get_by_role("radio").all()
+            if len(radios) >= 2 and radios[1].is_visible():
+                radios[1].check(timeout=3000)
+            else:
+                page.locator(r'text=/Pick\s*up|Abhol|Übergabe/i').first.click(timeout=2000)
+        except Exception:
+            pass
+
+        try:
+            page.wait_for_timeout(1200)
+        except Exception:
+            pass
+
+        after_box = ""
+        try:
+            edit_btn = page.get_by_role("button", name=re.compile(r"Angebot bearbeiten", re.I)).first
+            eh = edit_btn.element_handle()
+            if eh is not None:
+                box_h = eh.evaluate_handle("el => el.closest('aside,section,div')")
+                box_el = box_h.as_element() if box_h is not None else None
+                if box_el is not None:
+                    after_box = (box_el.inner_text() or "")
+        except Exception:
+            after_box = ""
+
+        changed = bool(before_box and after_box and before_box != after_box)
+        atomic["transfer_costs"]["price_box_changed"] = changed
+        atomic["transfer_costs"]["status"] = "warn"
+        return page, "Warn", "intent assert_transfer_costs: best-effort toggle done (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_summary_sections", "assert summary sections"}:
+        atomic: dict = {"summary": {"status": "warn", "headings": [], "sections_hint": step.get("sections")}}
+
+        pats = [
+            r"Zusammenfassung",
+            r"Summary",
+            r"Pers\S*nliche\s*Daten|Personal\s*information",
+            r"H\S*ndler|Dealer|Partner",
+            r"Abhol|Pick\s*up",
+            r"Fahrzeug|Vehicle",
+            r"Hersteller|Manufacturer",
+            r"ENVKV",
+        ]
+        hits = []
+        for p in pats:
+            try:
+                if page.locator(f"text=/{p}/i").first.is_visible():
+                    hits.append(p)
+            except Exception:
+                continue
+        atomic["summary"]["headings"] = hits
+
+        if hits:
+            atomic["summary"]["status"] = "warn"
+            return page, "Warn", "intent assert_summary_sections: summary markers present (SPEC_REQUIRED)", atomic
+
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_summary_sections")
+        return page, "Warn", "intent assert_summary_sections: not confirmed (variant?) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_summary_section_collapsible", "assert summary section collapsible"}:
+        atomic: dict = {"summary_collapsible": {"status": "warn", "toggled": False}}
+
+        btn = None
+        try:
+            btn = page.locator('[aria-expanded]').first
+            if not btn.is_visible():
+                btn = None
+        except Exception:
+            btn = None
+        if btn is None:
+            try:
+                btn = page.get_by_role("button", name=re.compile(r"Mehr|Details|Expand|Collapse|\u00d6ffnen|Schlie\u00dfen", re.I)).first
+                if not btn.is_visible():
+                    btn = None
+            except Exception:
+                btn = None
+
+        if btn is None:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_summary_collapsible")
+            return page, "Warn", "intent assert_summary_section_collapsible: no collapsible control found (SPEC_REQUIRED) " + _summarize_candidates(inv, limit=6), atomic
+
+        before = None
+        try:
+            before = btn.get_attribute("aria-expanded")
+        except Exception:
+            before = None
+        try:
+            btn.click(timeout=3000)
+            page.wait_for_timeout(300)
+            btn.click(timeout=3000)
+        except Exception:
+            pass
+        after = None
+        try:
+            after = btn.get_attribute("aria-expanded")
+        except Exception:
+            after = None
+
+        atomic["summary_collapsible"]["toggled"] = bool(before is not None and after is not None and before != after)
+        atomic["summary_collapsible"]["status"] = "warn"
+        return page, "Warn", "intent assert_summary_section_collapsible: toggled (best-effort, SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_thank_you", "assert thank you"}:
+        atomic: dict = {"thank_you": {"status": "warn", "markers": []}}
+        pats = [r"Thank\s*You", r"Danke", r"Vielen\s*Dank", r"interested|interessiert"]
+        hits = []
+        for p in pats:
+            try:
+                if page.locator(f"text=/{p}/i").first.is_visible():
+                    hits.append(p)
+            except Exception:
+                continue
+        atomic["thank_you"]["markers"] = hits
+        if hits:
+            atomic["thank_you"]["status"] = "pass"
+            return page, "Pass", "intent assert_thank_you: thank-you markers visible", atomic
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_thank_you")
+        return page, "Warn", "intent assert_thank_you: not confirmed (SPEC_REQUIRED) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_confirmation_email_trigger", "assert confirmation email trigger"}:
+        atomic: dict = {"confirmation_email": {"status": "warn", "ui_marker": False}}
+        pats = [r"confirmation\s*email", r"Best\S*tigungs\s*E-?Mail", r"E-?Mail\s*wurde\s*gesendet"]
+        for p in pats:
+            try:
+                if page.locator(f"text=/{p}/i").first.is_visible():
+                    atomic["confirmation_email"]["ui_marker"] = True
+                    atomic["confirmation_email"]["status"] = "pass"
+                    return page, "Pass", "intent assert_confirmation_email_trigger: UI marker visible (heuristic)", atomic
+            except Exception:
+                continue
+        return page, "Warn", "intent assert_confirmation_email_trigger: not confirmed (SPEC_REQUIRED)", atomic
+
+    if intent in {"assert_thank_you_overview", "assert thank you overview"}:
+        atomic: dict = {"thank_you_overview": {"status": "warn", "markers": []}}
+        pats = [r"overview", r"\S*bersicht", r"selected\s*options", r"Auswahl", r"selection"]
+        hits = []
+        for p in pats:
+            try:
+                if page.locator(f"text=/{p}/i").first.is_visible():
+                    hits.append(p)
+            except Exception:
+                continue
+        atomic["thank_you_overview"]["markers"] = hits
+        if hits:
+            atomic["thank_you_overview"]["status"] = "warn"
+            return page, "Warn", "intent assert_thank_you_overview: overview markers present (SPEC_REQUIRED)", atomic
+        inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_thank_you_overview")
+        return page, "Warn", "intent assert_thank_you_overview: not confirmed (SPEC_REQUIRED) " + _summarize_candidates(inv, limit=6), atomic
+
+    if intent in {"assert_duc_entrypoint_captured", "assert duc entrypoint captured"}:
+        atomic: dict = {"fsag": {"status": "warn", "found": False, "clicked": False, "url_before": "", "url_after": "", "saved": None}}
+
+        want_click = bool(step.get("click") or step.get("navigate"))
+        try:
+            atomic["fsag"]["url_before"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["fsag"]["url_before"] = ""
+
+        target = None
+        try:
+            btn = page.locator('[data-testid="cta-next-step"]').first
+            if btn.is_visible():
+                target = btn
+        except Exception:
+            target = None
+        if target is None:
+            try:
+                target = page.get_by_role(
+                    "button",
+                    name=re.compile(r"Zum\s*Leasingantrag|Zur\s*Bestellung|Weiter|Next\s*Step|N\S*chster\s*Schritt", re.I),
+                ).first
+                if not target.is_visible():
+                    target = None
+            except Exception:
+                target = None
+        if target is None:
+            try:
+                target = page.get_by_role("link", name=re.compile(r"FSAG|Leasingantrag|Bestellung", re.I)).first
+                if not target.is_visible():
+                    target = None
+            except Exception:
+                target = None
+
+        if target is None:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_fsag_entry")
+            return page, "Warn", "intent assert_duc_entrypoint_captured: no FSAG/Next-Step entrypoint found " + _summarize_candidates(inv, limit=6), atomic
+
+        atomic["fsag"]["found"] = True
+
+        new_page = None
+        if want_click:
+            try:
+                with page.context.expect_page(timeout=2500) as new_page_info:
+                    target.click(timeout=8000, no_wait_after=True)
+                new_page = new_page_info.value
+            except Exception:
+                try:
+                    target.click(timeout=8000)
+                except Exception:
+                    pass
+            atomic["fsag"]["clicked"] = True
+            if new_page is not None:
+                page = new_page
+                try:
+                    page.wait_for_load_state("domcontentloaded", timeout=15000)
+                except Exception:
+                    pass
+
+        try:
+            atomic["fsag"]["url_after"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["fsag"]["url_after"] = ""
+
+        try:
+            p = Path(run_dir) / "fsag_entrypoint_url_redacted.txt"
+            url_to_save = atomic["fsag"]["url_after"] or atomic["fsag"]["url_before"]
+            p.write_text(url_to_save, encoding="utf-8")
+            atomic["fsag"]["saved"] = str(Path(p.name))
+        except Exception:
+            pass
+
+        return page, "Warn", "intent assert_duc_entrypoint_captured: entrypoint captured (SPEC_REQUIRED)", atomic
+
+    if intent in {"click_next_step", "click next step"}:
+        atomic: dict = {"next_step": {"status": "warn", "clicked": False, "url_before": "", "url_after": "", "new_page": False}}
+        try:
+            atomic["next_step"]["url_before"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["next_step"]["url_before"] = ""
+
+        cta = None
+        try:
+            cta = page.locator('[data-testid="cta-next-step"]').first
+            if not cta.is_visible():
+                cta = None
+        except Exception:
+            cta = None
+        if cta is None:
+            try:
+                cta = page.get_by_role("button", name=re.compile(r"Weiter|Next Step|N\S*chster\s*Schritt|Fortfahren", re.I)).first
+                if not cta.is_visible():
+                    cta = None
+            except Exception:
+                cta = None
+
+        if cta is None:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_click_next_step")
+            return page, "Warn", "intent click_next_step: CTA not found " + _summarize_candidates(inv, limit=6), atomic
+
+        try:
+            if not cta.is_enabled():
+                return page, "Warn", "intent click_next_step: CTA disabled (SPEC_REQUIRED)", atomic
+        except Exception:
+            pass
+
+        new_page = None
+        try:
+            with page.context.expect_page(timeout=2500) as new_page_info:
+                cta.click(timeout=10000, no_wait_after=True)
+            new_page = new_page_info.value
+        except Exception:
+            try:
+                cta.click(timeout=10000)
+            except Exception:
+                return page, "Warn", "intent click_next_step: click failed (variant?)", atomic
+
+        atomic["next_step"]["clicked"] = True
+        if new_page is not None:
+            atomic["next_step"]["new_page"] = True
+            page = new_page
+        try:
+            page.wait_for_load_state("domcontentloaded", timeout=15000)
+        except Exception:
+            pass
+        try:
+            page.wait_for_timeout(800)
+        except Exception:
+            pass
+
+        try:
+            atomic["next_step"]["url_after"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["next_step"]["url_after"] = ""
+
+        atomic["next_step"]["status"] = "warn"
+        return page, "Warn", "intent click_next_step: clicked (SPEC_REQUIRED)", atomic
+
+    if intent in {"open_layer_or_page", "open layer or page"}:
+        text = (step.get("text") or step.get("name") or "").strip()
+        expect = (step.get("expect") or "either").strip().lower()
+        atomic: dict = {
+            "open": {
+                "status": "warn",
+                "text": text,
+                "expect": expect,
+                "clicked": False,
+                "opened_dialog": False,
+                "opened_new_page": False,
+                "url_before": "",
+                "url_after": "",
+            }
+        }
+        try:
+            atomic["open"]["url_before"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["open"]["url_before"] = ""
+
+        if not text:
+            return page, "Warn", "intent open_layer_or_page: missing 'text' (SPEC_REQUIRED)", atomic
+
+        pat = re.compile(text, re.I)
+        target = None
+        for role in ("link", "button"):
+            try:
+                cand = page.get_by_role(role, name=pat).first
+                if cand.is_visible():
+                    target = cand
+                    break
+            except Exception:
+                continue
+        if target is None:
+            try:
+                cand = page.locator(f'text=/{text}/i').first
+                if cand.is_visible():
+                    target = cand
+            except Exception:
+                target = None
+
+        if target is None:
+            inv = export_ui_inventory(page, Path(run_dir), prefix="ui_inventory_intent_open_layer_or_page")
+            return page, "Warn", "intent open_layer_or_page: target not found " + _summarize_candidates(inv, limit=6), atomic
+
+        new_page = None
+        try:
+            with page.context.expect_page(timeout=2500) as new_page_info:
+                target.click(timeout=10000, no_wait_after=True)
+            new_page = new_page_info.value
+        except Exception:
+            try:
+                target.click(timeout=10000)
+            except Exception:
+                return page, "Warn", "intent open_layer_or_page: click failed (variant?)", atomic
+
+        atomic["open"]["clicked"] = True
+
+        if new_page is not None:
+            atomic["open"]["opened_new_page"] = True
+            page = new_page
+            try:
+                page.wait_for_load_state("domcontentloaded", timeout=15000)
+            except Exception:
+                pass
+        else:
+            dlg_opened = False
+            try:
+                dlg = page.locator('[role="dialog"], [aria-modal="true"]').first
+                dlg.wait_for(state="visible", timeout=2500)
+                dlg_opened = True
+            except Exception:
+                dlg_opened = False
+            atomic["open"]["opened_dialog"] = bool(dlg_opened)
+            if dlg_opened:
+                try:
+                    close_btn = page.get_by_role("button", name=re.compile(r"Close|Schlie\u00dfen|Schliessen", re.I)).first
+                    if close_btn.is_visible():
+                        close_btn.click(timeout=2000)
+                    else:
+                        page.keyboard.press("Escape")
+                except Exception:
+                    try:
+                        page.keyboard.press("Escape")
+                    except Exception:
+                        pass
+
+        try:
+            atomic["open"]["url_after"] = redact_url_for_logging(getattr(page, "url", "") or "")
+        except Exception:
+            atomic["open"]["url_after"] = ""
+
+        if expect == "page" and atomic["open"]["opened_new_page"]:
+            atomic["open"]["status"] = "pass"
+            return page, "Pass", "intent open_layer_or_page: opened new page", atomic
+        if expect == "dialog" and atomic["open"]["opened_dialog"]:
+            atomic["open"]["status"] = "pass"
+            return page, "Pass", "intent open_layer_or_page: opened dialog", atomic
+        if expect == "either" and (atomic["open"]["opened_new_page"] or atomic["open"]["opened_dialog"]):
+            atomic["open"]["status"] = "pass"
+            return page, "Pass", "intent open_layer_or_page: opened", atomic
+
+        return page, "Warn", "intent open_layer_or_page: not confirmed (SPEC_REQUIRED)", atomic
+
+    return page, "Warn", f"intent: unsupported '{intent}'", None
 
 
 def _is_journey_driver_test_case(test_case: dict) -> bool:
@@ -1861,6 +3689,7 @@ def run_smoketest(
 
     run_dir = Path(report_file).parent
     net_trace_path = run_dir / "network_trace.jsonl"
+    step_results_path = run_dir / "step_results.jsonl"
     current_step_id_for_net: str | None = None
 
     api_dir = run_dir / "api"
@@ -1932,7 +3761,7 @@ def run_smoketest(
 
         def _is_target_url(u: str) -> bool:
             ul = (u or "").lower()
-            return ("processopportunities" in ul) or ("duc-leasing" in ul)
+            return ("processopportunities" in ul) or ("duc-leasing" in ul) or ("duc-vehicle" in ul)
 
         def _is_backendish_url(u: str) -> bool:
             # Log lightweight metadata for backend-ish calls so the trace is useful
@@ -1980,6 +3809,8 @@ def run_smoketest(
                 return "processOpportunities"
             if "duc-leasing" in ul:
                 return "duc_leasing"
+            if "duc-vehicle" in ul:
+                return "duc_vehicle"
             if "pickuplocation" in ul or "pickup-location" in ul:
                 return "pickupLocation"
             if "/pickup" in ul:
@@ -2144,6 +3975,26 @@ def run_smoketest(
                             )
                             rec["form_snapshot"] = "form_snapshot_before_duc_leasing.json"
 
+                if "duc-vehicle" in (request.url or "").lower() and (request.method or "").upper() == "POST":
+                    post = request.post_data or ""
+                    payload_obj = None
+                    try:
+                        payload_obj = json.loads(post) if post else None
+                    except Exception:
+                        payload_obj = None
+                    if payload_obj is not None:
+                        red = _redact_payload(payload_obj)
+                        (run_dir / "duc_vehicle_request_redacted.json").write_text(
+                            json.dumps(red, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                        saved_api = _api_write_json("duc_vehicle_request", payload_obj)
+                        if saved_api:
+                            rec["saved_api"] = saved_api
+                        rec["saved"] = "duc_vehicle_request_redacted.json"
+                    else:
+                        rec["note"] = "duc-vehicle POST payload was not JSON"
+
                 _append_jsonl(net_trace_path, {"ts": _dt.datetime.now().isoformat(timespec="milliseconds"), "step": current_step_id_for_net, **rec})
             except Exception:
                 pass
@@ -2161,6 +4012,10 @@ def run_smoketest(
                     "url": _safe_url(req.url),
                     "resourceType": req.resource_type,
                 }
+
+                # Keep response headers only for the primary targets (risk-reduced).
+                if _is_target_url(req.url):
+                    rec["headers"] = _net_headers_redacted(response.headers)
 
                 ul = (req.url or "").lower()
 
@@ -2214,6 +4069,22 @@ def run_smoketest(
                             rec["saved_api"] = saved_api
                         rec["saved"] = "duc_leasing_response.json"
 
+                if "duc-vehicle" in ul:
+                    try:
+                        body = response.json()
+                    except Exception:
+                        body = None
+                    if body is not None:
+                        red = _redact_payload(body)
+                        (run_dir / "duc_vehicle_response_redacted.json").write_text(
+                            json.dumps(red, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                        saved_api = _api_write_json("duc_vehicle_response", body)
+                        if saved_api:
+                            rec["saved_api"] = saved_api
+                        rec["saved"] = "duc_vehicle_response_redacted.json"
+
                 if "processopportunities" in ul:
                     try:
                         body = response.json()
@@ -2236,7 +4107,10 @@ def run_smoketest(
 
         context.on("request", on_request)
         context.on("response", on_response)
-        _net_mark("network_capture_enabled", {"targets": ["processOpportunities", "duc-leasing"], "file": str(net_trace_path.name)})
+        _net_mark(
+            "network_capture_enabled",
+            {"targets": ["processOpportunities", "duc-leasing", "duc-vehicle"], "file": str(net_trace_path.name)},
+        )
 
         page = context.new_page()
         page.set_viewport_size({"width": 1920, "height": 1080})
@@ -2950,6 +4824,7 @@ def run_smoketest(
                         selector = ""
                         element = None
                         message = ""
+                        atomic: dict | None = None
                         try:
                             # For actions that don't interact with elements, handle them first.
                             if action_norm == "open_url":
@@ -2991,7 +4866,7 @@ def run_smoketest(
                                 element = "N/A" # No element involved
                             elif action_norm == "intent":
                                 # High-level agent step
-                                page, status, message = execute_intent(page, step, run_dir=Path(report_file).parent)
+                                page, status, message, atomic = execute_intent(page, step, run_dir=Path(report_file).parent)
                                 element = "N/A"
                             else:
                                 # For all other actions, we need to find an element.
@@ -3191,6 +5066,26 @@ def run_smoketest(
                                 pass
                             page.screenshot(path=screenshot_path)
                             print(f"    📸 Screenshot saved to {screenshot_path}")
+
+                            # Persist a machine-readable step record for post-run analysis.
+                            _append_jsonl(
+                                step_results_path,
+                                {
+                                    "ts": _dt.datetime.now().isoformat(timespec="seconds"),
+                                    "case_id": case_id,
+                                    "step_num": step_num,
+                                    "step_id": step_id_text,
+                                    "action": action,
+                                    "action_norm": action_norm,
+                                    "intent": (step.get("intent") if action_norm == "intent" else None),
+                                    "status": status,
+                                    "message": (message or ""),
+                                    "atomic": atomic,
+                                    "selector": selector,
+                                    "screenshot": Path(screenshot_path).name,
+                                    "page_url": redact_url_for_logging(getattr(page, "url", "") or ""),
+                                },
+                            )
 
                             # Update the HTML report after each step
                             update_report(

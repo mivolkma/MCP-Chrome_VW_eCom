@@ -36,6 +36,11 @@ MEINE AUFGABEN:
 5. Tests autonom ausführen: Setup vorbereiten, Ergebnisse triagieren, Script-Issues selbst beheben
 6. Bei wahrscheinlichem App-Defekt: Evidence Pack vorbereiten (Screenshots/Logs/Repro) – Bug-Report macht später der Nutzer
 
+SPRACHREGEL (SYSTEMWEIT, VERBINDLICH):
+- Kommunikation mit mir (Human) immer in meiner bevorzugten Sprache.
+- SPEC_REQUIRED-Ablage/Antworten immer in der Sprache der Testcharta (keine Mischsprache).
+- Wenn etwas nicht deterministisch bewertbar ist: Frage mich nach der Erwartung (Human-Sprache) und bitte explizit um die Antwort in Charter-Sprache für die Ablage.
+
 SICHERHEITS-REGELN (KRITISCH!):
 ✓ Ergebnisse in results/ speichern (LOKAL)
 ✓ NIEMALS: git add results/

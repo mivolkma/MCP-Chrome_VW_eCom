@@ -1,7 +1,7 @@
 # 🤖 AGENTS - Arbeitsanweisungen & Memory
 
-**Version:** 1.3  
-**Zuletzt aktualisiert:** 15. Januar 2026  
+**Version:** 1.6  
+**Zuletzt aktualisiert:** 16. Januar 2026  
 **Status:** ✅ Production-Ready
 
 **DIES IST DIE ZENTRALE REFERENZ FÜR ALLE AGENTS**
@@ -313,6 +313,126 @@ PRINZIPIEN:
    - Keine Secrets/Keys/Query-Token in Logs oder Artefakten.
 ```
 
+### Workflow 1b: "Keep it green" Governance (Unknown → Atomic → Supervisor → Triage)
+```
+Ziel:
+- Kein Testbericht darf "aus Screenshots geraten" werden.
+- Jeder Report-Checklist-Punkt ist entweder (a) durch eine atomare Assertion belegt oder (b) explizit als Test-Gap markiert.
+
+Sprachregel (verbindlich):
+- SPEC_REQUIRED-Fragen und Antworten werden IMMER in der Sprache der Testcharta abgelegt (keine Mischsprache, keine Übersetzungs-Mixtur).
+- Kommunikation mit dem Human erfolgt IMMER in dessen bevorzugter Sprache.
+- Wenn ein Ergebnis unklar/nicht bewertbar ist: Human um eine Beschreibung der erwarteten Ergebnisse bitten (in Human-Sprache) und explizit um die Antwort in Charter-Sprache für die Ablage bitten; erst dann automatisieren.
+
+Nicht verhandelbar (Spec-Lock):
+- Charter-Anforderungen (Wording/Intention) werden NICHT vom Agenten umformuliert, abgeschwächt oder "passend gemacht", um Tests grün zu bekommen.
+- Wenn eine Formulierung unklar oder nicht deterministisch messbar ist, ist das ein SPEC_REQUIRED: der Mensch entscheidet über Intention/Thresholds.
+- Der Agent darf nur konservativ markieren: PASS nur bei echter, deterministischer Prüfung; sonst WARN/UNKNOWN + klare Frage/To-do.
+
+Prinzip:
+1) Unknown identifizieren
+   - In der HTML-Report-Checklist sind Items initial oft "unknown" (Charter-Text, keine Automation).
+
+2) Atomare Checks spezifizieren
+   - Pro Checklist-Item eine klare, prüfbare Hypothese formulieren (DOM-State, Network-Call, Navigation, UI-Interaktion).
+   - Keine Annahmen hardcoden, die von Viewport/Variant abhängen (z.B. Pfeile nur bei Overflow).
+   - Wenn es ohne zusätzliche Spezifikation nicht messbar ist ("many", "cover all" etc.): SPEC_REQUIRED formulieren und Mensch fragen.
+
+3) Atomare Checks implementieren
+   - Runner schreibt maschinenlesbare Ergebnisse nach: results/.../step_results.jsonl
+   - Atomare Details landen im Step unter "atomic" (keine Secrets).
+
+4) Post-Run Analyse ausführen
+   - Analyzer übernimmt atomic Ergebnisse und füllt die HTML-Checklist deterministisch.
+   - Zusätzlich: agent_feedback.md mit ehrlichen Limitationen + nächsten Schritten.
+
+5) Supervisor / Quality Gate (optional streng)
+   - In "strict" Mode gilt: alles außer PASS ist ein Fail (Warn/Unknown/Fail).
+   - Ziel: CI bleibt grün, weil die Checks stabil sind – nicht weil wir weiche Aussagen machen.
+
+6) Triage: App-Bug vs. Test-Gap
+   - FAIL mit stabiler Assertion + Evidenz (Screenshots/Logs/Network) → wahrscheinlich App-Defekt.
+   - WARN/UNKNOWN oder FAIL wegen fehlender Selector/Timing/Variant → Test-Gap / Script-Issue.
+
+Artefakte (Run-Ordner):
+- BTO_Test_Report_v1.0.html (visuell + Checklist)
+- step_results.jsonl (Quelle der Wahrheit für Automation)
+- agent_feedback.md (Limitations + Handlungshinweise)
+- supervisor_summary.md (Gate-Auswertung)
+```
+
+### Workflow 1c: Deterministische Test-Umsetzung (Playbook für alle Agents)
+```
+Ziel:
+- Probleme bei der Test-Umsetzung lösen, indem jeder Check als deterministische Regel + messbarer Beweis implementiert wird.
+- Keine "impliziten" PASS-Behauptungen: Alles muss aus Atomic Results ableitbar sein.
+
+Sprachregel (verbindlich):
+- Alle SPEC_REQUIRED-Ablagen (Fix-Backlog, Fragen, Antworten, Mapping-Regeln) müssen in der Sprache der Charter erfolgen.
+- Kommunikation mit dem Human erfolgt IMMER in dessen bevorzugter Sprache.
+- Falls der Agent ein Item nicht deterministisch bewerten kann: Human nach erwarteter Ausprägung/Beispielen fragen (in Human-Sprache) und die Antwort für die Ablage in Charter-Sprache anfordern.
+
+Geltungsbereich:
+- Für ALLE Agents, die Tests/Runner/Analyzer/Reports anfassen.
+
+Nicht verhandelbar (Spec-Lock):
+- Charter-Text bleibt die Spec (Wording/Intention nicht weichzeichnen).
+- Wenn ein Punkt ohne zusätzliche Spezifikation nicht deterministisch testbar ist: als SPEC_REQUIRED dokumentieren und STOPP.
+
+Single-Item-Fokus (wichtig):
+- Immer GENAU 1 Charter-Bullet/Checklist-Item pro Iteration "hart machen".
+- Erst wenn dieses Item deterministisch ist, zum nächsten.
+
+Schrittfolge (immer in dieser Reihenfolge):
+1) Item isolieren
+   - Wähle ein konkretes Verify-Statement aus der Charter/Checklist.
+
+2) Deterministische Regel definieren
+   - Lege fest: Was genau ist PASS/FAIL?
+   - Definiere messbare Kriterien: Zählwerte, Schwellen, Mapping-Regeln, erlaubte Toleranzen, Locale/Viewport-Varianten.
+   - Definiere Quelle der Wahrheit: DOM, Network-Response, URL/State.
+
+3) Wenn Regel fehlt → SPEC_REQUIRED (kein Workaround)
+   - Trage die Frage + Template-Antwortfelder in results/.../latest_fix_backlog.md ein.
+   - Erfinde keine Schwellen/Labels/Mapping-Regeln.
+
+4) Selektor-Strategie festlegen (robust)
+   - Präferenz: data-testid → ARIA role+name → stabile Strukturanker.
+   - Text-Matching nur als Fallback und dann mit klarer Locale-Regel (DE/EN).
+   - Wenn unklar: UI-Inventar/DOM-Snapshot als Evidence erzeugen (results/), nicht raten.
+
+5) Implementieren als atomarer Check (Runner/Intent)
+   - Der Intent MUSS eindeutige Atomic Felder schreiben (keine Freitext-Interpretation).
+   - Jeder Atomic Wert muss deterministisch aus beobachtbarem State kommen.
+   - Keine Secrets/PII in Atomic: nur Hash/Length/Counts oder redacted Strings.
+
+6) Evidence-Kopplung
+   - PASS/FAIL muss sich aus step_results.jsonl + optional Screenshot/Trace ableiten lassen.
+   - Wenn ein Check auf UI-Position/CSS beruht: BoundingBox/CSS-Props in Atomic loggen.
+
+7) Mapping im Analyzer (deterministisch)
+   - Analyzer setzt Checklist-Status ausschließlich aus Atomic Daten.
+   - Kein "wenn Screenshot ok aussieht".
+
+8) Stabilitäts-Validierung
+   - Mindestens 1 Run mit Standard-Viewport.
+   - Wenn das Item viewport-abhängig ist (Sticky/Slider/Overflow): Desktop + Mobile prüfen und Unterschiede als Regeln dokumentieren.
+   - Bei Flakiness: Wait-Strategie auf State/Events, nicht auf Sleeps.
+
+Definition of Done (für ein Checklist-Item):
+- Es gibt eine dokumentierte Regel (oder SPEC_REQUIRED, falls nicht möglich).
+- Es gibt einen Intent/Check, der Atomic Daten schreibt.
+- Analyzer kann daraus deterministisch PASS/FAIL/WARN/UNKNOWN ableiten.
+- Evidence ist in results/ im Run-Ordner vorhanden.
+
+Triage-Regel (immer):
+- FAIL + stabile Assertion + Evidence → wahrscheinlich App-Defekt.
+- WARN/UNKNOWN oder FAIL wegen Locator/Timing/Variant → Test-Gap (Script-Issue) + SPEC_REQUIRED/Robustness Fix.
+
+Hinweis:
+- Dieses Playbook ergänzt Workflow 1b und ist die "Standard-Arbeitsweise" für Test-Härtung.
+```
+
 ### Workflow 2: Neuen Prompt erstellen
 ```
 1. Prompt in prompts/active/ erstellen
@@ -500,6 +620,9 @@ EFFIZIENT ARBEITEN = Weniger Dateien, bessere Struktur, keine Duplikate
 ---
 
 **VERSIONSVERLAUF:**
+- v1.6 (16.01.2026): Sprachregel präzisiert: Human-Kommunikation in bevorzugter Sprache, Ablage weiterhin strikt in Charter-Sprache
+- v1.5 (16.01.2026): Workflow 1c "Deterministische Test-Umsetzung" als verbindliches Playbook für alle Agents ergänzt
+- v1.4 (16.01.2026): Workflow 1b "Keep it green" Governance ergänzt (Unknown→Atomic→Supervisor→Triage)
 - v1.3 (15.01.2026): Versionierungssystem (MAJOR.MINOR) als Regel ergänzt
 - v1.2 (15.01.2026): Regel ergänzt: Bei Doku-Änderungen immer Version/Datum/Changelog mitpflegen (inkl. Vor-dem-Commit-Check)
 - v1.1 (13.01.2026): Fehler 5 hinzugefügt - Warnung vor Dokumentations-Duplikaten, Efficiency-Checkliste erweitert

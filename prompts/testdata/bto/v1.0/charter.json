@@ -351,9 +351,24 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "role": "button",
-                        "name": "Angebot bearbeiten"
+                        "action": "intent",
+                        "intent": "assert_price_box_present",
+                        "name": "price box"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "open_financing_layer",
+                        "name": "open financing layer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "change_financing_parameter",
+                        "name": "change any financing parameter"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_price_box_updated",
+                        "name": "price box updated"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a clickable link is displayed to enable the editing of the fincing parameters.\n- clicking on the mentioned link opens the fincing layer.\n- changing the fincing parameters is possible."
@@ -431,9 +446,19 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "role": "button",
-                        "name": "Weiter"
+                        "action": "intent",
+                        "intent": "assert_sticky_bar_present",
+                        "name": "sticky bar / next step"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_sticky_behavior_on_scroll",
+                        "name": "sticky behavior on scroll"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_next_step_navigation_when_completed",
+                        "name": "next step navigation when completed"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the sticky bar is displayed at the bottom of the viewport and sticks to it while scrolling the eCom page down until the footer section is accessed.\n- the Next Step CTA is displayed on the sticky bar.\n- clicking the Next Step CTA always leads to the next step when the current step is completed."
@@ -511,8 +536,19 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "form-wrapper"
+                        "action": "intent",
+                        "intent": "assert_disclaimer_references",
+                        "name": "disclaimer references"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_disclaimer_texts",
+                        "name": "disclaimer texts"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_co2_disclaimer",
+                        "name": "summary CO2 disclaimer (heuristic)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- two disclaimer references are displayed next to the total price and the total leasing rate.\n- Corresponding disclaimer texts are displayed at the bottom of the eCom page.\n- when the summary step is accessed, the CO2 class disclaimer reference and text is also displayed."
@@ -590,8 +626,20 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_active_tab",
+                        "name": "personal data tab",
+                        "tab": "personal data"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the personal data tab has a headline and a copy text requesting the user to enter the personal data.\n- specific dropdowns and input fields are displayed.\n- the user can use all the dropdowns and input field to enter the personal data.\n"
@@ -669,8 +717,30 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_active_tab",
+                        "name": "personal data tab",
+                        "tab": "personal data"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_next_step_gate",
+                        "name": "next step gated when incomplete"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_next_step_navigation_when_completed",
+                        "name": "next step leads to Volkswagen partner"
                     }
                 ],
                 "expectedResult": "Verify that:\n- proceeding to the next eCom step is only possible when all mandatory information has been provided.\n- clicking on the Next Step CTA leads to the Volkswagen partner step."
@@ -748,8 +818,15 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner",
+                        "tab": "volkswagen partner"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the content of the Volkswagen partner tab can be accessed.\n- a headline and text are displayed.\n"
@@ -827,8 +904,20 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner",
+                        "tab": "volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search input + locate me"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a search input  field for searching dealers is displayed.\n- Locate Me functionality is visible\n"
@@ -906,8 +995,32 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner",
+                        "tab": "volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer (city/PLZ)",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results (SPEC_REQUIRED many)",
+                        "min_results": 3
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select one dealer"
                     }
                 ],
                 "expectedResult": "Verify that:\n- searching by cities or postal codes shows many corresponding results.\n- the location of the selected dealer is displayed on a map which can be activated in the first visit.\n"
@@ -985,8 +1098,31 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner",
+                        "tab": "volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer (city/PLZ)",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select one dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_next_step_navigation_when_completed",
+                        "name": "next step leads to pick up (SPEC_REQUIRED)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- every shown result can be selected.\n- clicking on the Next Step CTA leads to the Pick up step."
@@ -1064,8 +1200,68 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Pick up tab",
+                        "tab": "Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_active_tab",
+                        "name": "pick up tab selected",
+                        "tab": "pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_pickup_options",
+                        "name": "pickup tab content markers"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the content of the Pick up tab can be accessed.\n- specific headline and copy text are displayed.\n"
@@ -1143,8 +1339,62 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Pick up tab",
+                        "tab": "Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_pickup_options",
+                        "name": "pickup options + more info layer (best-effort)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- The dealer selected in the previous step and further options for picking up the car will be displayed.\n- Clicking on the ‘More information’ link opens a corresponding information layer.\n"
@@ -1222,8 +1472,62 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Pick up tab",
+                        "tab": "Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_transfer_costs",
+                        "name": "transfer costs affect price box (best-effort)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- every pick up option has specific transfer costs which effects the total leasing rate.\n"
@@ -1301,8 +1605,67 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_active_tab",
+                        "name": "summary tab selected",
+                        "tab": "summary"
                     }
                 ],
                 "expectedResult": "Verify that:\n- all the shown options are selectable.\n- By clicking on the CTA ‘Next Step’ you will be taken to the step ‘Summary’ only if a pick-up option has been selected."
@@ -1380,8 +1743,81 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_active_tab",
+                        "name": "summary tab selected",
+                        "tab": "summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "summary markers",
+                        "sections": [
+                            "Summary"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the content of the Summary tab can be accessed.\n- a specific headline is displayed.\n"
@@ -1459,8 +1895,76 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "personal information markers",
+                        "sections": [
+                            "personal information",
+                            "contract"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- some provided personal data is shown.\n- the wished contract is shown under the corresponding section."
@@ -1538,8 +2042,75 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "offerer markers",
+                        "sections": [
+                            "offerer"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the offerer is shown under the corresponding section.\n- a clickable info icon is displayed next to the offere which opens a corresponding info layer if clicked on.\n- the info layer can be closed by clicking on the close button."
@@ -1617,8 +2188,76 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "dealer markers",
+                        "sections": [
+                            "dealer",
+                            "volkswagen partner"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the selected dealer is shown under the corresponding section.\n- the dealer address, telephone number, website, and email address are shown.\n- the following text message is also shown under the dealer section. \"The Volkswagen partner you select will receive access to your order information as part of managing your order process.\""
@@ -1696,8 +2335,76 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "pickup location markers",
+                        "sections": [
+                            "pick up",
+                            "delivery date"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the selected pick up location is shown under the corresponding section.\n- a non-binding delivery date is shown.\n"
@@ -1775,8 +2482,76 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "selected vehicle markers",
+                        "sections": [
+                            "vehicle",
+                            "selected vehicle"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the selected vehicle information is shown under the corresponding section.\n- the full name of the selected vehicle is shown."
@@ -1854,8 +2629,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "energy & emissions markers",
+                        "sections": [
+                            "energy",
+                            "emissions",
+                            "co2"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the consumption, emission, and the co2 efficiency information is displayed.\n- a disclaimer reference is displayed next to the co2 class which refer to a corresponding disclaimer text at the bottom of the eCom page."
@@ -1933,8 +2777,74 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "open_layer_or_page",
+                        "name": "open ENVKV layer",
+                        "text": "ENVKV",
+                        "expect": "dialog"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a clickable link is show.\n- clicking on the link opens a layer showing the ENVKV label.\n- the ENVKV layer can be closed by clicking on the close button or the shim."
@@ -2012,8 +2922,72 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_section_collapsible",
+                        "name": "expand/collapse selected vehicle (best-effort)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a dropdown button is shown.\n- clicking on the dropdown button expands the selected vehicle section and clicking on it again collapses it.\n- the expantion shows more vehicle information, tire label link, product safty information link and the special equipment if selected."
@@ -2091,8 +3065,79 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_section_collapsible",
+                        "name": "expand selected vehicle (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "open_layer_or_page",
+                        "name": "open tire label layer",
+                        "text": "tire\\s*label|Reifen",
+                        "expect": "dialog"
                     }
                 ],
                 "expectedResult": "Verify that:\n- clicking on the tire label link opens the corresponding tire label layer.\n- related vehicle tire labels are displayed in the layer (svg graphics).\n- the layer can be closed by clicking on the close button or the shim."
@@ -2170,8 +3215,79 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_section_collapsible",
+                        "name": "expand selected vehicle (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "open_layer_or_page",
+                        "name": "open product safety page",
+                        "text": "product\\s*safty|Produktsicherheit",
+                        "expect": "page"
                     }
                 ],
                 "expectedResult": "Verify that:\n- clicking on the product safty information link leads to a separate page."
@@ -2249,8 +3365,75 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_summary_sections",
+                        "name": "manufacturer markers",
+                        "sections": [
+                            "manufacturer"
+                        ]
                     }
                 ],
                 "expectedResult": "Verify that:\n- the manufacturer is shown under the corresponding section.\n- the address and the email address of the manufacturer are shown under this section.\n"
@@ -2328,8 +3511,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_thank_you",
+                        "name": "thank you page visible"
                     }
                 ],
                 "expectedResult": "Verify that:\n- contract documents are shown in some cases(needs to be investigated more).\n- selectable additional services are shown.\n- clicking on the Next Step CTA leads to the Thank you step."
@@ -2407,8 +3659,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_thank_you",
+                        "name": "thank you page visible"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the content of the \"Thank You\" tab can be accessed.\n- a \"Thank You\" text message is displayed for the user for being interrested."
@@ -2486,8 +3807,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_confirmation_email_trigger",
+                        "name": "confirmation email info visible (heuristic)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- the user is informed about a confirmation email that has been sent.\n"
@@ -2565,8 +3955,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_thank_you_overview",
+                        "name": "selection overview markers (heuristic)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- an overview of selected options is shown."
@@ -2644,8 +4103,77 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_duc_entrypoint_captured",
+                        "name": "FSAG entrypoint present (no click)"
                     }
                 ],
                 "expectedResult": "Verify that:\n- a Next Step CTA is displayed."
@@ -2714,7 +4242,7 @@
         ],
         "testCases": [
             {
-                "id": "OH-eCom-BTS-35",
+                "id": "OH-eCom-BTO-35",
                 "description": "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page.",
                 "preconditions": "User is on Proceeding the journey to the FSAG section",
                 "steps": [
@@ -2723,8 +4251,78 @@
                         "value": null
                     },
                     {
-                        "action": "Verify UI elements",
-                        "data-testid": "placeholder-testid"
+                        "action": "intent",
+                        "intent": "assert_checkout_loaded",
+                        "name": "checkout loaded"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "fill_personal_data_required",
+                        "name": "fill personal data (best-effort)"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Volkswagen partner tab",
+                        "tab": "Volkswagen partner"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_search_ui",
+                        "name": "dealer search UI"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "search_dealer",
+                        "name": "search dealer",
+                        "query": "10115"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_dealer_results",
+                        "name": "dealer results"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_dealer",
+                        "name": "select dealer"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Pick up"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "select_pickup",
+                        "name": "select pick up option"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "navigate_to_tab",
+                        "name": "go to Summary tab",
+                        "tab": "Summary"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "click_next_step",
+                        "name": "next step to Thank you"
+                    },
+                    {
+                        "action": "intent",
+                        "intent": "assert_duc_entrypoint_captured",
+                        "name": "click FSAG entrypoint",
+                        "click": true
                     }
                 ],
                 "expectedResult": "Verify that:\n'- clicking on the Next Step CTA leads to the corresponding FSAG page."

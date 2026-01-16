@@ -19,6 +19,55 @@ Rahmenbedingungen:
 - Nach jedem Lauf: Ergebnisse prüfen, Triage durchführen (Script-Issue vs. App-Defekt) und nächste Schritte ableiten.
 - Bei App-Defekt: Evidence Pack vorbereiten (Screenshots/Logs/Repro-Schritte); der standardisierte Bug-Report wird später vom Nutzer erstellt.
 
+Keep-it-green (Governance):
+- Der Report darf keine "aus Screenshots abgeleiteten" Aussagen enthalten.
+- Für jedes Checklist-Item gilt: entweder atomar automatisiert belegt (PASS/FAIL/WARN) oder explizit als Test-Gap markiert (UNKNOWN/WARN mit klarer Limitation).
+- Optional (strict): alles außer PASS ist ein Gate-Fail (für CI/Quality-Gates erst aktivieren, wenn die Checks stabil sind).
+
+Spec-Lock:
+- Die Testcharta/Anforderungen werden nicht vom Agenten umformuliert oder abgeschwächt, nur um einen Lauf "grün" zu bekommen.
+- Wenn ein Charter-Text unklar ist (z.B. "many tabs", "cover all steps"), muss der Mensch die Intention/Schwellenwerte festlegen.
+- Der Agent markiert dann SPEC_REQUIRED als UNKNOWN/WARN inkl. konkreter Frage.
+
+Sprachregel (systemweit, verbindlich):
+- Kommunikation mit dem Human erfolgt IMMER in dessen bevorzugter Sprache.
+- Ablage/Artefakte (Fix-Backlog, SPEC_REQUIRED Fragen+Antworten, Mapping-Regeln) erfolgen IMMER in der Sprache der Testcharta.
+- Wenn ein Ergebnis unklar/nicht bewertbar ist: Human nach Erwartung fragen (Human-Sprache) und explizit um Antwort in Charter-Sprache für die Ablage bitten.
+
+## Strategie: Testfall-Verständnis → Härtung des Testscripts
+
+Ziel: Aus Charter-Texten werden deterministische, maschinenprüfbare Checks – ohne "aus Screenshots zu raten".
+
+Arbeitsartefakt (Fragen + Platz für Antworten):
+- [results/bto-checkout/reports/latest_fix_backlog.md](results/bto-checkout/reports/latest_fix_backlog.md)
+
+Vorgehen (konservativ, Spec-Lock-konform):
+1) Charter-Bullet isolieren
+	- Bullet ist die "Spec" (z.B. "sticky bar sticks while scrolling until footer is accessed").
+	- Sofort entscheiden: deterministisch testbar? Wenn nein → SPEC_REQUIRED (Frage im Fix-Backlog).
+
+2) Atomaren Check definieren (Hypothese + Messpunkt)
+	- DOM-State: Sichtbarkeit, Text, Attribute, Position, CSS-Properties.
+	- Navigation: URL/History/Tab-State/Step-Index.
+	- Network: konkreter Call (Host+Path), Status, minimaler Payload-Ausschnitt (redacted).
+
+3) Intent im Runner implementieren
+	- In `tools/execute_smoketest.py` als `intent`-Step (kleine, robuste Assertions).
+	- Ergebnis immer maschinenlesbar nach `results/.../step_results.jsonl` unter `atomic` schreiben.
+
+4) Variant-/Viewport-Abhängigkeiten aktiv prüfen
+	- Keine Annahmen hardcoden (z.B. Pfeile nur bei Overflow).
+	- Wenn Verhalten viewport-abhängig: gezielt Viewports probieren (Desktop/Tablet/Mobile), dann Assertion.
+	- Original-Viewport wiederherstellen; im `atomic` protokollieren welcher Viewport genutzt wurde.
+
+5) Post-Run Mapping (Analyzer) statt Screenshot-Interpretation
+	- `tools/analyze_bto_run.py` mappt nur echte `atomic` Ergebnisse auf Checklist PASS/FAIL/WARN.
+	- Wenn SPEC_REQUIRED offen: Checklist bleibt UNKNOWN/WARN + klare Frage.
+
+6) Supervisor/Quality Gate (optional)
+	- `tools/supervise_bto_run.py` im strict mode: alles außer PASS ist Fail.
+	- Aktivieren erst, wenn die Checks stabil sind (sonst blockiert man sich mit Flakes).
+
 Testcharta (git-verfügbar, v1.0):
 - Vollständig: [prompts/testdata/bto/v1.0/charter_full.md](prompts/testdata/bto/v1.0/charter_full.md)
 - Kompakt: [prompts/testdata/bto/v1.0/charter_compact.md](prompts/testdata/bto/v1.0/charter_compact.md)
@@ -53,6 +102,12 @@ Testcharta (git-verfügbar, v1.0):
 - Runner starten: `tools/run_bto_checkout.ps1`
 - Start-URL bei Prompt einfügen (vollständig inkl. Query ist ok; Artefakte bleiben redacted).
 - Artefakte liegen danach unter `results/bto-checkout/runs/<timestamp>/`.
+
+Post-Run (automatisch durch den Runner, falls aktiviert):
+- `step_results.jsonl`: maschinenlesbare Step- und Atomic-Ergebnisse (Quelle der Wahrheit).
+- `BTO_Test_Report_v1.0.html`: Checklist wird durch Analyzer deterministisch befüllt.
+- `agent_feedback.md`: ehrliche Limitationen + konkrete To-dos (Selector/Timing/Spec-Gaps).
+- Optional: `supervisor_summary.md` + Strict-Gate (FAIL wenn nicht alles PASS).
 
 ### B) Live Tracer installieren (vor CTA-Klick)
 - In DevTools/MCP per `evaluate_script` das Snippet `tools/snippets/trace_duc_entrypoint.js` injizieren.
